@@ -7,17 +7,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class CSVParser<T> {
+public class Parser<T> {
 
     private BufferedReader reader;
     private CreatorFromRow<T> creator;
     private static final Pattern regexSplitCSVRow =
             Pattern.compile(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*(?![^\\\"]*\\\"))");
 
-    public CSVParser(Reader data, CreatorFromRow<T> creator) {
+    public Parser(Reader data, CreatorFromRow<T> creator) {
         this.reader = new BufferedReader(data);
         this.creator = creator;
     }
+    /* TODO: I'm cool with using your parser. I just copied my files to add some structure since I think the document said
+    *   we should be adding all of this. Just clone your MalformedCSVException if we're using this parser. */
 
     public List<T> parseCSV() throws IOException, MalformedCSVException {
         List<T> list = new ArrayList<T>();
