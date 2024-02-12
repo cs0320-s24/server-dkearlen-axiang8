@@ -6,10 +6,11 @@ import spark.Route;
 
 public class ViewCSVHandler implements Route {
 
-    public ViewCSVHandler() {
+    public ViewCSVHandler(LoadCSVHandler load) {
 
     }
     @Override
     public Object handle(Request request, Response response) {
+        return 1;
     }
 }

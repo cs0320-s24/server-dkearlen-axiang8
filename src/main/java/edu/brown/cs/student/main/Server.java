@@ -3,12 +3,8 @@ package edu.brown.cs.student.main;
 import static spark.Spark.after;
 
 import edu.brown.cs.student.main.Handlers.LoadCSVHandler;
-import edu.brown.cs.student.main.SearchCSVHandler;
-import edu.brown.cs.student.main.ViewCSVHandler;
-import edu.brown.cs.student.main.soup.Soup;
-import edu.brown.cs.student.main.soup.SoupAPIUtilities;
-import java.util.ArrayList;
-import java.util.List;
+import edu.brown.cs.student.main.Handlers.SearchCSVHandler;
+import edu.brown.cs.student.main.Handlers.ViewCSVHandler;
 import spark.Spark;
 
 /**
@@ -24,7 +20,7 @@ public class Server {
     // TODO 0: Read through this class and determine the shape of this project...
     // What are the endpoints that we can access... What happens if you go to them?
     public static void main(String[] args) {
-        int port = 3232;
+        int port = 3030;
         Spark.port(port);
     /*
        Setting CORS headers to allow cross-origin requests from the client; this is necessary for the client to
@@ -43,20 +39,21 @@ public class Server {
            - https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
            - https://portswigger.net/web-security/cors
     */
-        after(
-                (request, response) -> {
-                    response.header("Access-Control-Allow-Origin", "*");
-                    response.header("Access-Control-Allow-Methods", "*");
-                });
+      after(
+          (request, response) -> {
+            response.header("Access-Control-Allow-Origin", "*");
+            response.header("Access-Control-Allow-Methods", "*");
+          });
 
-        // Setting up the handler for the GET /order and /activity endpoints
-        Spark.get("loadcsv", new LoadCSVHandler());
-        Spark.get("searchcsv", new SearchCSVHandler());
-        Spark.get("viewcsv", new ViewCSVHandler());
-        Spark.init();
-        Spark.awaitInitialization();
+      // Setting up the handler for the GET /order and /activity endpoints
+      LoadCSVHandler load = new LoadCSVHandler();
+      Spark.get("loadcsv", load);
+      Spark.get("searchcsv", new SearchCSVHandler(load));
+      Spark.get("viewcsv", new ViewCSVHandler(load));
+      Spark.init();
+      Spark.awaitInitialization();
 
-        // Notice this link alone leads to a 404... Why is that?
-        System.out.println("Server started at http://localhost:" + port);
+      // Notice this link alone leads to a 404... Why is that?
+      System.out.println("Server started at http://localhost:" + port);
     }
 }
