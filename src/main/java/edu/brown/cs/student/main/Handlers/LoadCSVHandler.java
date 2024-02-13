@@ -2,16 +2,29 @@ package edu.brown.cs.student.main.Handlers;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+import edu.brown.cs.student.main.Creators.CreatorFromString;
+import edu.brown.cs.student.main.DataSource.Broadband.BroadbandData;
+import edu.brown.cs.student.main.DataSource.Broadband.CensusDataSource;
+import edu.brown.cs.student.main.DataSource.DataSourceException;
+import edu.brown.cs.student.main.Exceptions.MalformedCSVException;
+import edu.brown.cs.student.main.Parser;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class LoadCSVHandler implements Route {
-    public LoadCSVHandler() {
-
+    private final CensusDataSource source;
+    public LoadCSVHandler(CensusDataSource source) {
+        this.source = source;
     }
 
     @Override
@@ -23,11 +36,21 @@ public class LoadCSVHandler implements Route {
         // endpoint
         // ex. http://localhost:3232/activity?participants=num
         //     System.out.println(params);
+        // Step 1: Prepare to send a reply of some sort
+        Moshi moshi = new Moshi.Builder().build();
+        // Replies will be Maps from String to Object. This isn't ideal; see reflection...
+        Type mapStringObject = Types.newParameterizedType(Map.class, String.class, Object.class);
+        JsonAdapter<Map<String, Object>> adapter = moshi.adapter(mapStringObject);
+        JsonAdapter<BroadbandData> broadbandDataAdapter = moshi.adapter(BroadbandData.class);
+        Map<String, Object> responseMap = new HashMap<>();
         File file;
         String filePath = request.queryParams("filepath");
         //     System.out.println(participants);
         if (filePath.isEmpty()) {
-            throw new IllegalArgumentException("File path cannot be null or empty");
+            responseMap.put("filePath", filePath);
+            responseMap.put("type", "error");
+            responseMap.put("error_type", "empty_file_path");
+            return adapter.toJson(responseMap);
         } else {
             // Create a File object to represent the input path
             file = new File(filePath);
@@ -35,7 +58,10 @@ public class LoadCSVHandler implements Route {
 
         // Ensure that the file exists and is a file (not a directory)
         if (!file.exists() || !file.isFile()) {
-            return new loadFileFailedResponse().serialize();
+            responseMap.put("filePath", filePath);
+            responseMap.put("type", "error");
+            responseMap.put("error_type", "file_not_found");
+            return adapter.toJson(responseMap);
         }
 
         String dataDirectory = "data";
@@ -43,28 +69,48 @@ public class LoadCSVHandler implements Route {
 
         // Ensure that the file is within the "data" directory
         if (!fileAbsolutePath.contains(File.separator + dataDirectory)) {
-            throw new IllegalArgumentException(
-                    "File must be within the " + dataDirectory + " directory");
+            responseMap.put("filePath", filePath);
+            responseMap.put("type", "error");
+            responseMap.put("error_type", "file_not_in_data_directory");
+            return adapter.toJson(responseMap);
         }
-
-        boolean success = loadCSVFile(filePath);
-
-        if (success) {
-            // If the CSV file was loaded successfully, return a success response
-            Map<String, Object> responseData = new HashMap<>();
-            responseData.put("result", "success");
-            responseData.put("filepath", filePath);
-            return responseData;
-        } else {
-            // If there was an error loading the CSV file, return an error response
-            return createErrorResponse("error_datasource", "Failed to load CSV file");
+        try {
+            BroadbandData data = new BroadbandData(source.getBroadbandData(filePath));
+            // Building responses *IS* the job of this class:
+            responseMap.put("type", "success");
+            responseMap.put("broadband percentages", broadbandDataAdapter.toJson(data));
+            return adapter.toJson(responseMap);
+        } catch (IllegalArgumentException e) {
+            responseMap.put("filepath", filePath);
+            responseMap.put("type", "error");
+            responseMap.put("error_type", "invalid_file");
+            responseMap.put("details", e.getMessage());
+            return adapter.toJson(responseMap);
+        } catch (FileNotFoundException e) {
+            responseMap.put("filepath", filePath);
+            responseMap.put("type", "error");
+            responseMap.put("error_type", "file_not_found");
+            responseMap.put("details", e.getMessage());
+            return adapter.toJson(responseMap);
+        } catch (MalformedCSVException e) {
+            responseMap.put("filepath", filePath);
+            responseMap.put("type", "error");
+            responseMap.put("error_type", "malformed_csv");
+            responseMap.put("details", e.getMessage());
+            return adapter.toJson(responseMap);
+        } catch (IOException e) {
+            responseMap.put("filepath", filePath);
+            responseMap.put("type", "error");
+            responseMap.put("error_type", "unreadable_file");
+            responseMap.put("details", e.getMessage());
+            return adapter.toJson(responseMap);
+        } catch (DataSourceException e) {
+            responseMap.put("filepath", filePath);
+            responseMap.put("type", "error");
+            responseMap.put("error_type", "data_source_exception");
+            responseMap.put("details", e.getMessage());
+            return adapter.toJson(responseMap);
         }
-    }
-
-    // Dummy method to simulate loading a CSV file
-    private boolean loadCSVFile(String filePath) {
-        //Parser parser = new Parser();
-        return true;
     }
 
     public record loadFileFailedResponse(String response_type) {
@@ -81,12 +127,12 @@ public class LoadCSVHandler implements Route {
         }
     }
 
-    public record loadFileSuccessResponse(String responseString, Map<String, Object> responseMap){
-        public loadFileSuccessResponse(Map<String, Object> responseMap){
+    public record loadFileSuccessResponse(String responseString, Map<String, Object> responseMap) {
+        public loadFileSuccessResponse(Map<String, Object> responseMap) {
             this("success", responseMap);
         }
 
-        String serialize(){
+        String serialize() {
             try {
                 // Initialize Moshi which takes in this class and returns it as JSON!
                 Moshi moshi = new Moshi.Builder().build();
@@ -101,6 +147,4 @@ public class LoadCSVHandler implements Route {
             }
         }
     }
-
-
 }
