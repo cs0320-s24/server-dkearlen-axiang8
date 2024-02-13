@@ -1,10 +1,12 @@
 package edu.brown.cs.student.main.Handlers;
 
+
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import java.io.IOException;
 import java.lang.reflect.Type;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -27,14 +29,17 @@ public class BroadbandHandler implements Route {
     Moshi moshi = new Moshi.Builder().build();
 
     this.stateCodes = new HashMap<>();
+
     // TODO: ensure that there should not be a try-catch block for this statement here
     // transfer the state codes into a hashmap.
     getStateCodes();
+
     // TODO: return something of value here
     return 1;
   }
 
   private void getStateCodes() throws URISyntaxException, IOException, InterruptedException {
+
     // create an instance of a request. This
     HttpRequest buildStateCodeApiRequest =
         HttpRequest.newBuilder()
@@ -47,6 +52,7 @@ public class BroadbandHandler implements Route {
         HttpClient.newBuilder()
             .build()
             .send(buildStateCodeApiRequest, HttpResponse.BodyHandlers.ofString());
+
 
     // Save the API file as a String
     String codes = stateCodes.body();
@@ -87,5 +93,6 @@ public class BroadbandHandler implements Route {
     System.out.println(sentCensusAPIRequests.body());
 
     return sentCensusAPIRequests.body();
+
   }
 }

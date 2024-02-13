@@ -1,6 +1,6 @@
-package edu.brown.cs.student.main;
+package edu.brown.cs.student.main.Creators;
 
-import edu.brown.cs.student.main.FactoryFailureException;
+import edu.brown.cs.student.main.Exceptions.FactoryFailureException;
 import java.util.List;
 
 /**
