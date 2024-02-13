@@ -1,5 +1,6 @@
 package edu.brown.cs.student.main;
 
+
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import java.io.IOException;
@@ -31,4 +32,5 @@ public class BroadbandAPIUtilities {
       return new Activity();
     }
   }
+
 }

@@ -2,8 +2,12 @@ package edu.brown.cs.student.main;
 
 import static spark.Spark.after;
 
+
+import edu.brown.cs.student.main.Handlers.BroadbandHandler;
+
 import edu.brown.cs.student.main.DataSource.Broadband.ACSAPIBroadbandSource;
 import edu.brown.cs.student.main.DataSource.Broadband.CensusDataSource;
+
 import edu.brown.cs.student.main.Handlers.LoadCSVHandler;
 import edu.brown.cs.student.main.Handlers.SearchCSVHandler;
 import edu.brown.cs.student.main.Handlers.ViewCSVHandler;
@@ -19,6 +23,8 @@ import spark.Spark;
  * all had the same shared state.
  */
 public class Server {
+
+
   // TODO 0: Read through this class and determine the shape of this project...
   // What are the endpoints that we can access... What happens if you go to them?
 
@@ -37,13 +43,18 @@ public class Server {
 
     LoadCSVHandler load = new LoadCSVHandler(this.source);
     Spark.get("loadcsv", load);
+
+    // TODO: Ensure that passing this.source to SearchCSVHandler and ViewCSVHandler is necessary.
     Spark.get("searchcsv", new SearchCSVHandler(this.source));
     Spark.get("viewcsv", new ViewCSVHandler(this.source));
+    Spark.get("broadband", new BroadbandHandler());
+
     Spark.init();
     Spark.awaitInitialization();
   }
 
   public static void main(String[] args) {
+
     /*
        Setting CORS headers to allow cross-origin requests from the client; this is necessary for the client to
        be able to make requests to the server.
