@@ -1,8 +1,6 @@
 package edu.brown.cs.student.main;
 
 import edu.brown.cs.student.main.Creators.CreatorFromString;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +11,8 @@ public class Searcher {
 
   private boolean matchFound = false;
 
-  public Searcher(List<List<String>> data, CreatorFromString creatorFromString, boolean hasHeaders) {
+  public Searcher(
+      List<List<String>> data, CreatorFromString creatorFromString, boolean hasHeaders) {
     this.data = data;
     this.creatorFromString = creatorFromString;
     this.hasHeaders = hasHeaders;
@@ -66,7 +65,7 @@ public class Searcher {
   }
 
   private List<List<String>> findMatchWithIndex(
-          String value, List<List<String>> returnList, int index) {
+      String value, List<List<String>> returnList, int index) {
     for (List<String> object : this.data) {
       if (object.get(index).toLowerCase().contains((value.toLowerCase()))) {
         System.out.println(object);

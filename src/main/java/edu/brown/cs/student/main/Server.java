@@ -19,29 +19,31 @@ import spark.Spark;
  * all had the same shared state.
  */
 public class Server {
-    // TODO 0: Read through this class and determine the shape of this project...
-    // What are the endpoints that we can access... What happens if you go to them?
+  // TODO 0: Read through this class and determine the shape of this project...
+  // What are the endpoints that we can access... What happens if you go to them?
 
-    private final CensusDataSource source;
-    static final int port = 3030;
-    public Server(CensusDataSource dataSource) {
-        source = dataSource;
-        Spark.port(port);
+  private final CensusDataSource source;
+  static final int port = 3030;
 
-        after(
-                (request, response) -> {
-                    response.header("Access-Control-Allow-Origin", "*");
-                    response.header("Access-Control-Allow-Methods", "*");
-                });
+  public Server(CensusDataSource dataSource) {
+    source = dataSource;
+    Spark.port(port);
 
-        LoadCSVHandler load = new LoadCSVHandler(this.source);
-        Spark.get("loadcsv", load);
-        Spark.get("searchcsv", new SearchCSVHandler(this.source));
-        Spark.get("viewcsv", new ViewCSVHandler(this.source));
-        Spark.init();
-        Spark.awaitInitialization();
-    }
-    public static void main(String[] args) {
+    after(
+        (request, response) -> {
+          response.header("Access-Control-Allow-Origin", "*");
+          response.header("Access-Control-Allow-Methods", "*");
+        });
+
+    LoadCSVHandler load = new LoadCSVHandler(this.source);
+    Spark.get("loadcsv", load);
+    Spark.get("searchcsv", new SearchCSVHandler(this.source));
+    Spark.get("viewcsv", new ViewCSVHandler(this.source));
+    Spark.init();
+    Spark.awaitInitialization();
+  }
+
+  public static void main(String[] args) {
     /*
        Setting CORS headers to allow cross-origin requests from the client; this is necessary for the client to
        be able to make requests to the server.
@@ -60,10 +62,10 @@ public class Server {
            - https://portswigger.net/web-security/cors
     */
 
-      // Setting up the handler for the GET /order and /activity endpoints
+    // Setting up the handler for the GET /order and /activity endpoints
 
-      // Notice this link alone leads to a 404... Why is that?
-        Server server = new Server(new ACSAPIBroadbandSource());
-      System.out.println("Server started at http://localhost:" + port);
-    }
+    // Notice this link alone leads to a 404... Why is that?
+    Server server = new Server(new ACSAPIBroadbandSource());
+    System.out.println("Server started at http://localhost:" + port);
+  }
 }
