@@ -29,14 +29,6 @@ public class LoadCSVHandler implements Route {
 
     @Override
     public Object handle(Request request, Response response) {
-        // If you are interested in how parameters are received, try commenting out and
-        // printing these lines! Notice that requesting a specific parameter requires that parameter
-        // to be fulfilled.
-        // If you specify a queryParam, you can access it by appending ?parameterName=name to the
-        // endpoint
-        // ex. http://localhost:3232/activity?participants=num
-        //     System.out.println(params);
-        // Step 1: Prepare to send a reply of some sort
         Moshi moshi = new Moshi.Builder().build();
         // Replies will be Maps from String to Object. This isn't ideal; see reflection...
         Type mapStringObject = Types.newParameterizedType(Map.class, String.class, Object.class);
@@ -45,14 +37,12 @@ public class LoadCSVHandler implements Route {
         Map<String, Object> responseMap = new HashMap<>();
         File file;
         String filePath = request.queryParams("filepath");
-        //     System.out.println(participants);
         if (filePath.isEmpty()) {
             responseMap.put("filePath", filePath);
             responseMap.put("type", "error");
             responseMap.put("error_type", "empty_file_path");
             return adapter.toJson(responseMap);
         } else {
-            // Create a File object to represent the input path
             file = new File(filePath);
         }
 
@@ -77,8 +67,8 @@ public class LoadCSVHandler implements Route {
         try {
             BroadbandData data = new BroadbandData(source.getBroadbandData(filePath));
             // Building responses *IS* the job of this class:
-            responseMap.put("type", "success");
-            responseMap.put("broadband percentages", broadbandDataAdapter.toJson(data));
+            responseMap.put("type", "load_success");
+            //responseMap.put("broadband percentages", broadbandDataAdapter.toJson(data));
             return adapter.toJson(responseMap);
         } catch (IllegalArgumentException e) {
             responseMap.put("filepath", filePath);
