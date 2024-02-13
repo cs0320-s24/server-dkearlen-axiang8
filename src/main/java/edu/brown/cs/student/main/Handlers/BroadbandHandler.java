@@ -15,36 +15,39 @@ import spark.Route;
 
 public class BroadbandHandler implements Route {
 
+  private Map<String, Object> stateCodes;
+
   @Override
   public Object handle(Request request, Response response) throws Exception {
     // Instantialize a Moshi object to transfer a .json file into a Java object
     Moshi moshi = new Moshi.Builder().build();
 
-    Map<String, Object> stateCodes = new HashMap<>();
+    this.stateCodes = new HashMap<>();
+    try{
+      String stateCodes = getStateCodes();
 
+    } catch (Exception e){
+      stateCodes.put("result", "exception");
+    }
+    // TODO: return something of value here
+    return 1;
   }
 
-  private String sendCountyRequest() throws URISyntaxException, IOException, InterruptedException {
-    // Build a request to this BoredAPI. Try out this link in your browser, what do you see?
-    // TODO 1: Looking at the documentation, how can we add to the URI to query based
-    // on participant number?
-    HttpRequest buildCencusApiRequest =
+
+  private String getStateCodes() throws URISyntaxException, IOException, InterruptedException {
+    // create an instance of a request. This
+    HttpRequest buildStateCodeApiRequest =
         HttpRequest.newBuilder()
-            .uri(new URI("http://www.boredapi.com/api/activity/"))
+            .uri(new URI("https://api.census.gov/data/2010/dec/sf1?get=NAME&for=state:*"))
             .GET()
             .build();
 
     // Send that API request then store the response in this variable. Note the generic type.
-    HttpResponse<String> sentBoredApiResponse =
+    HttpResponse<String> stateCodes =
         HttpClient.newBuilder()
             .build()
-            .send(buildCencusApiRequest, HttpResponse.BodyHandlers.ofString());
+            .send(buildStateCodeApiRequest, HttpResponse.BodyHandlers.ofString());
 
-    // What's the difference between these two lines? Why do we return the body? What is useful from
-    // the raw response (hint: how can we use the status of response)?
-    System.out.println(sentBoredApiResponse);
-    System.out.println(sentBoredApiResponse.body());
-
-    return sentBoredApiResponse.body();
+    return stateCodes.body();
   }
 }
