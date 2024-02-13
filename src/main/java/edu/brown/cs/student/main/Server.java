@@ -2,6 +2,12 @@ package edu.brown.cs.student.main;
 
 import static spark.Spark.after;
 
+<<<<<<< Updated upstream
+=======
+import edu.brown.cs.student.main.DataSource.Broadband.ACSAPIBroadbandSource;
+import edu.brown.cs.student.main.DataSource.Broadband.CensusDataSource;
+import edu.brown.cs.student.main.Handlers.BroadbandHandler;
+>>>>>>> Stashed changes
 import edu.brown.cs.student.main.Handlers.LoadCSVHandler;
 import edu.brown.cs.student.main.SearchCSVHandler;
 import edu.brown.cs.student.main.ViewCSVHandler;
@@ -21,11 +27,41 @@ import spark.Spark;
  * all had the same shared state.
  */
 public class Server {
+<<<<<<< Updated upstream
     // TODO 0: Read through this class and determine the shape of this project...
     // What are the endpoints that we can access... What happens if you go to them?
     public static void main(String[] args) {
         int port = 3232;
         Spark.port(port);
+=======
+  // TODO 0: Read through this class and determine the shape of this project...
+  // What are the endpoints that we can access... What happens if you go to them?
+
+  private final CensusDataSource source;
+  static final int port = 3030;
+
+  public Server(CensusDataSource dataSource) {
+    source = dataSource;
+    Spark.port(port);
+
+    after(
+        (request, response) -> {
+          response.header("Access-Control-Allow-Origin", "*");
+          response.header("Access-Control-Allow-Methods", "*");
+        });
+
+    LoadCSVHandler load = new LoadCSVHandler(this.source);
+    Spark.get("loadcsv", load);
+    // TODO: Ensure that passing this.source to SearchCSVHandler and ViewCSVHandler is necessary.
+    Spark.get("searchcsv", new SearchCSVHandler(this.source));
+    Spark.get("viewcsv", new ViewCSVHandler(this.source));
+    Spark.get("broadband", new BroadbandHandler());
+    Spark.init();
+    Spark.awaitInitialization();
+  }
+
+  public static void main(String[] args) {
+>>>>>>> Stashed changes
     /*
        Setting CORS headers to allow cross-origin requests from the client; this is necessary for the client to
        be able to make requests to the server.
