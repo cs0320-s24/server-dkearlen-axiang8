@@ -19,7 +19,7 @@ public class SearchCSVHandler implements Route {
 
   private final CensusDataSource source;
 
-  public SearchCSVHandler(CensusDataSource source) {
+  public SearchCSVHandler(CensusDataSource source, CreatorFromString creator) {
     this.source = source;
   }
 
@@ -33,16 +33,52 @@ public class SearchCSVHandler implements Route {
 
     List<List<String>> data = source.getParsedData();
     CreatorFromString creator = new CreatorFromString();
+
     String target = request.queryParams("target");
     boolean hasHeaders = Boolean.parseBoolean(request.queryParams("headers"));
+    String indexType = request.queryParams("indexType");
     String index = request.queryParams("index");
     Searcher searcher = new Searcher(data, creator, hasHeaders);
-    data = searcher.search(target);
+    System.out.println("target: " + target);
+    System.out.println("headers: " + hasHeaders);
+    System.out.println("indexType: " + indexType);
+    System.out.println("index: " + index);
+
+    List<List<String>> searchResults;
+    if (indexType == null || index == null) {
+      searchResults = searcher.search(target);
+    }
+    else if (indexType.equalsIgnoreCase("string")) {
+      searchResults = searcher.search(target, index);
+    }
+    else if (indexType.equalsIgnoreCase("int")) {
+      try {
+        searchResults = searcher.search(target, Integer.parseInt(index));
+      } catch (NumberFormatException e) {
+        responseMap.put("target", target);
+        responseMap.put("headers", hasHeaders);
+        responseMap.put("index", index);
+        responseMap.put("indexType", indexType);
+        responseMap.put("type", "error");
+        responseMap.put("error_type", "index_not_an_int");
+        return adapter.toJson(responseMap);
+      }
+    }
+    else {
+      responseMap.put("target", target);
+      responseMap.put("headers", hasHeaders);
+      responseMap.put("index", index);
+      responseMap.put("indexType", indexType);
+      responseMap.put("type", "error");
+      responseMap.put("error_type", "invalid_index_type");
+      return adapter.toJson(responseMap);
+    }
     responseMap.put("target", target);
     responseMap.put("headers", hasHeaders);
     responseMap.put("index", index);
+    responseMap.put("indexType", indexType);
     responseMap.put(
-        "filtered_search_results", broadbandDataAdapter.toJson(new BroadbandData(data)));
+        "filtered_search_results", broadbandDataAdapter.toJson(new BroadbandData(searchResults)));
     return adapter.toJson(responseMap);
   }
 }

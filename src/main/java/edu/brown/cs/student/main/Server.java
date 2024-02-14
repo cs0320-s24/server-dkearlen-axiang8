@@ -3,6 +3,7 @@ package edu.brown.cs.student.main;
 import static spark.Spark.after;
 
 
+import edu.brown.cs.student.main.Creators.CreatorFromString;
 import edu.brown.cs.student.main.DataSource.Broadband.CSVSource;
 import edu.brown.cs.student.main.Handlers.BroadbandHandler;
 
@@ -42,11 +43,12 @@ public class Server {
           response.header("Access-Control-Allow-Methods", "*");
         });
 
-    LoadCSVHandler load = new LoadCSVHandler(this.source);
+    CreatorFromString creator = new CreatorFromString();
+    LoadCSVHandler load = new LoadCSVHandler(this.source, creator);
     Spark.get("loadcsv", load);
 
     // TODO: Ensure that passing this.source to SearchCSVHandler and ViewCSVHandler is necessary.
-    Spark.get("searchcsv", new SearchCSVHandler(this.source));
+    Spark.get("searchcsv", new SearchCSVHandler(this.source, creator));
     Spark.get("viewcsv", new ViewCSVHandler(this.source));
     Spark.get("broadband", new BroadbandHandler());
 

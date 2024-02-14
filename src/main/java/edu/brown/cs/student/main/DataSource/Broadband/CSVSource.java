@@ -17,7 +17,7 @@ public class CSVSource implements CensusDataSource {
     System.out.println("successful call to CSV Source getBroadband data");
     FileReader reader = new FileReader(filePath);
     CreatorFromString creator = new CreatorFromString();
-    Parser<List<String>> parser = new Parser<>(reader, creator);
+    Parser parser = new Parser(reader, creator);
     parsedData = parser.parseCSV();
     return parsedData;
   }

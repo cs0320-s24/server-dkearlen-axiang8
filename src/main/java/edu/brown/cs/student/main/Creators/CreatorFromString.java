@@ -32,6 +32,7 @@ public class CreatorFromString implements CreatorFromRow<List<String>> {
    * @return - returns a List<String> to use in CSVSearcher. Specifically the first row.
    */
   public List<String> getHeaderRow() {
+    System.out.println("getting header rows");
     return this.rows.get(0);
   }
 }

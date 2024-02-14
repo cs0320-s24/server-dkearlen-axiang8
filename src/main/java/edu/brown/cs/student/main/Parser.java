@@ -1,6 +1,7 @@
 package edu.brown.cs.student.main;
 
 import edu.brown.cs.student.main.Creators.CreatorFromRow;
+import edu.brown.cs.student.main.Creators.CreatorFromString;
 import edu.brown.cs.student.main.Exceptions.FactoryFailureException;
 import edu.brown.cs.student.main.Exceptions.MalformedCSVException;
 import java.io.BufferedReader;
@@ -10,22 +11,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class Parser<T> {
+public class Parser {
 
   private BufferedReader reader;
-  private CreatorFromRow<T> creator;
+  private static CreatorFromString creator;
   private static final Pattern regexSplitCSVRow =
       Pattern.compile(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*(?![^\\\"]*\\\"))");
 
-  public Parser(Reader data, CreatorFromRow<T> creator) {
+  public Parser(Reader data, CreatorFromString cr) {
     this.reader = new BufferedReader(data);
-    this.creator = creator;
+    creator = cr;
   }
   /* TODO: I'm cool with using your parser. I just copied my files to add some structure since I think the document said
    *   we should be adding all of this. Just clone your MalformedCSVException if we're using this parser. */
 
-  public List<T> parseCSV() throws IOException, MalformedCSVException {
-    List<T> list = new ArrayList<T>();
+  public List<List<String>> parseCSV() throws IOException, MalformedCSVException {
+    List<List<String>> list = new ArrayList<>();
     try {
       int numCols = -1;
       String line;
@@ -38,7 +39,7 @@ public class Parser<T> {
           throw new MalformedCSVException();
         }
 
-        T object = creator.create(row);
+        List<String> object = creator.create(row);
         list.add(object);
       }
     } catch (IOException e) {

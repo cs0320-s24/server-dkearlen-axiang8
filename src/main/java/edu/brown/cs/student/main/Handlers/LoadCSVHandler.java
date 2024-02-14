@@ -3,6 +3,7 @@ package edu.brown.cs.student.main.Handlers;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
+import edu.brown.cs.student.main.Creators.CreatorFromString;
 import edu.brown.cs.student.main.DataSource.Broadband.BroadbandData;
 import edu.brown.cs.student.main.DataSource.Broadband.CensusDataSource;
 import edu.brown.cs.student.main.DataSource.DataSourceException;
@@ -19,8 +20,9 @@ import spark.Route;
 
 public class LoadCSVHandler implements Route {
   private final CensusDataSource source;
+  private static CreatorFromString creator;
 
-  public LoadCSVHandler(CensusDataSource source) {
+  public LoadCSVHandler(CensusDataSource source, CreatorFromString creator) {
     this.source = source;
   }
 
