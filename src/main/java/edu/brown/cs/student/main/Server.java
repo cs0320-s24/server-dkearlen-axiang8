@@ -29,7 +29,7 @@ public class Server {
   private final CensusDataSource source;
   static final int port = 3030;
 
-  public Server(CSVSource dataSource) {
+  public Server(CensusDataSource dataSource) {
     source = dataSource;
     Spark.port(port);
 

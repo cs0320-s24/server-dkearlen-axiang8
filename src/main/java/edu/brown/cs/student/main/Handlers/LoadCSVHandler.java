@@ -6,7 +6,6 @@ import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.Creators.CreatorFromString;
 import edu.brown.cs.student.main.DataSource.Broadband.BroadbandData;
 import edu.brown.cs.student.main.DataSource.Broadband.CensusDataSource;
-import edu.brown.cs.student.main.DataSource.DataSourceException;
 import edu.brown.cs.student.main.Exceptions.MalformedCSVException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,8 +21,9 @@ public class LoadCSVHandler implements Route {
   private final CensusDataSource source;
   private static CreatorFromString creator;
 
-  public LoadCSVHandler(CensusDataSource source, CreatorFromString creator) {
+  public LoadCSVHandler(CensusDataSource source, CreatorFromString c) {
     this.source = source;
+    creator = c;
   }
 
   @Override
@@ -65,7 +65,7 @@ public class LoadCSVHandler implements Route {
       return adapter.toJson(responseMap);
     }
     try {
-      BroadbandData data = new BroadbandData(source.getBroadbandData(filePath));
+      BroadbandData data = new BroadbandData(source.retrieveAndParse(filePath, creator));
       // Building responses *IS* the job of this class:
       responseMap.put("type", "load_success");
       // responseMap.put("broadband percentages", broadbandDataAdapter.toJson(data));
@@ -92,12 +92,6 @@ public class LoadCSVHandler implements Route {
       responseMap.put("filepath", filePath);
       responseMap.put("type", "error");
       responseMap.put("error_type", "unreadable_file");
-      responseMap.put("details", e.getMessage());
-      return adapter.toJson(responseMap);
-    } catch (DataSourceException e) {
-      responseMap.put("filepath", filePath);
-      responseMap.put("type", "error");
-      responseMap.put("error_type", "data_source_exception");
       responseMap.put("details", e.getMessage());
       return adapter.toJson(responseMap);
     }

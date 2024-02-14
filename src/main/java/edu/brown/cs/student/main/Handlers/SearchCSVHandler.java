@@ -18,9 +18,11 @@ import spark.Route;
 public class SearchCSVHandler implements Route {
 
   private final CensusDataSource source;
+  private static CreatorFromString creator;
 
-  public SearchCSVHandler(CensusDataSource source, CreatorFromString creator) {
+  public SearchCSVHandler(CensusDataSource source, CreatorFromString c) {
     this.source = source;
+    creator = c;
   }
 
   @Override
@@ -32,7 +34,6 @@ public class SearchCSVHandler implements Route {
     Map<String, Object> responseMap = new HashMap<>();
 
     List<List<String>> data = source.getParsedData();
-    CreatorFromString creator = new CreatorFromString();
 
     String target = request.queryParams("target");
     boolean hasHeaders = Boolean.parseBoolean(request.queryParams("headers"));
