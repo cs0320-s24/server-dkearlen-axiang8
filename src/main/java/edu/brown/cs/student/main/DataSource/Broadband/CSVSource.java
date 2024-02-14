@@ -14,6 +14,7 @@ public class CSVSource implements CensusDataSource {
   @Override
   public List<List<String>> getBroadbandData(String filePath)
       throws IOException, MalformedCSVException {
+    System.out.println("successful call to CSV Source getBroadband data");
     FileReader reader = new FileReader(filePath);
     CreatorFromString creator = new CreatorFromString();
     Parser<List<String>> parser = new Parser<>(reader, creator);
@@ -22,6 +23,7 @@ public class CSVSource implements CensusDataSource {
   }
 
   public List<List<String>> getParsedData() {
+    System.out.println("successful call to get Parsed Data");
     return parsedData;
   }
   // potentially overload this method that can use API and have state code and county code as

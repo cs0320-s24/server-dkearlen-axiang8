@@ -3,6 +3,7 @@ package edu.brown.cs.student.main;
 import static spark.Spark.after;
 
 
+import edu.brown.cs.student.main.DataSource.Broadband.CSVSource;
 import edu.brown.cs.student.main.Handlers.BroadbandHandler;
 
 import edu.brown.cs.student.main.DataSource.Broadband.ACSAPIBroadbandSource;
@@ -31,7 +32,7 @@ public class Server {
   private final CensusDataSource source;
   static final int port = 3030;
 
-  public Server(CensusDataSource dataSource) {
+  public Server(CSVSource dataSource) {
     source = dataSource;
     Spark.port(port);
 
@@ -76,7 +77,7 @@ public class Server {
     // Setting up the handler for the GET /order and /activity endpoints
 
     // Notice this link alone leads to a 404... Why is that?
-    Server server = new Server(new ACSAPIBroadbandSource());
+    Server server = new Server(new CSVSource());
     System.out.println("Server started at http://localhost:" + port);
   }
 }
