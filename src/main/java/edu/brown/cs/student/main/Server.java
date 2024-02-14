@@ -5,11 +5,8 @@ import static spark.Spark.after;
 
 import edu.brown.cs.student.main.Creators.CreatorFromString;
 import edu.brown.cs.student.main.DataSource.Broadband.CSVSource;
-import edu.brown.cs.student.main.Handlers.BroadbandHandler;
-
-import edu.brown.cs.student.main.DataSource.Broadband.ACSAPIBroadbandSource;
 import edu.brown.cs.student.main.DataSource.Broadband.CensusDataSource;
-
+import edu.brown.cs.student.main.Handlers.BroadbandHandler;
 import edu.brown.cs.student.main.Handlers.LoadCSVHandler;
 import edu.brown.cs.student.main.Handlers.SearchCSVHandler;
 import edu.brown.cs.student.main.Handlers.ViewCSVHandler;
@@ -25,7 +22,6 @@ import spark.Spark;
  * all had the same shared state.
  */
 public class Server {
-
 
   // TODO 0: Read through this class and determine the shape of this project...
   // What are the endpoints that we can access... What happens if you go to them?

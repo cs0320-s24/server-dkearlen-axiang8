@@ -4,11 +4,11 @@ public class CensusData {
   private String name;
   private Integer code;
 
-  public String returnName(){
+  public String returnName() {
     return new String(name);
   }
 
-  public Integer returnCode(){
+  public Integer returnCode() {
     return Integer.valueOf(code);
   }
 }
