@@ -36,10 +36,11 @@ public class BroadbandHandler implements Route {
     // get the county code from the state code and the county given (lowercase to remove case-sensitivity)
     String stateCode = this.stateMap.get(state);
     String countyCode = getCountyCode(this.stateMap.get(state), county.toLowerCase());
-    String data = getData();
+    // String data = getData();
     // TODO: return something of value here
     return 1;
   }
+
   /**
    * The getStateCodes method is a helper method that turns the stateCodes variable into a map of states
    * and their corresponding codes.
