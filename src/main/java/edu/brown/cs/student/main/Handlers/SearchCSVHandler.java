@@ -5,7 +5,7 @@ import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.Creators.CreatorFromString;
 import edu.brown.cs.student.main.DataSource.Broadband.BroadbandData;
-import edu.brown.cs.student.main.DataSource.Broadband.CensusDataSource;
+import edu.brown.cs.student.main.DataSource.Broadband.CSVSource;
 import edu.brown.cs.student.main.Searcher;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
@@ -17,10 +17,10 @@ import spark.Route;
 
 public class SearchCSVHandler implements Route {
 
-  private final CensusDataSource source;
+  private final CSVSource source;
   private static CreatorFromString creator;
 
-  public SearchCSVHandler(CensusDataSource source, CreatorFromString c) {
+  public SearchCSVHandler(CSVSource source, CreatorFromString c) {
     this.source = source;
     creator = c;
   }

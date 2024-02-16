@@ -4,7 +4,8 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.DataSource.Broadband.BroadbandData;
-import edu.brown.cs.student.main.DataSource.Broadband.CensusDataSource;
+import edu.brown.cs.student.main.DataSource.Broadband.CSVSource;
+
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,9 +14,9 @@ import spark.Response;
 import spark.Route;
 
 public class ViewCSVHandler implements Route {
-  private final CensusDataSource source;
+  private final CSVSource source;
 
-  public ViewCSVHandler(CensusDataSource source) {
+  public ViewCSVHandler(CSVSource source) {
     this.source = source;
   }
 

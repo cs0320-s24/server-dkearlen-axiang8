@@ -8,13 +8,12 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-public class CSVSource implements CensusDataSource {
+public class CSVSource {
 
   public CSVSource() {}
 
   private static List<List<String>> parsedData;
 
-  @Override
   public List<List<String>> retrieveAndParse(String filePath, CreatorFromString creator)
       throws IOException, MalformedCSVException {
     FileReader reader = new FileReader(filePath);

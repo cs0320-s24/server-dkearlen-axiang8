@@ -5,7 +5,7 @@ import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.Creators.CreatorFromString;
 import edu.brown.cs.student.main.DataSource.Broadband.BroadbandData;
-import edu.brown.cs.student.main.DataSource.Broadband.CensusDataSource;
+import edu.brown.cs.student.main.DataSource.Broadband.CSVSource;
 import edu.brown.cs.student.main.Exceptions.MalformedCSVException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,10 +18,10 @@ import spark.Response;
 import spark.Route;
 
 public class LoadCSVHandler implements Route {
-  private final CensusDataSource source;
+  private final CSVSource source;
   private static CreatorFromString creator;
 
-  public LoadCSVHandler(CensusDataSource source, CreatorFromString c) {
+  public LoadCSVHandler(CSVSource source, CreatorFromString c) {
     this.source = source;
     creator = c;
   }
