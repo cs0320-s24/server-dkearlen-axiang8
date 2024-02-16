@@ -3,6 +3,7 @@ package edu.brown.cs.student.main.ACS;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
+import edu.brown.cs.student.main.Exceptions.DataRetrievalException;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -20,11 +21,13 @@ public class ACSAPIDataSource implements APIDataSource{
   private Map<String, String> stateMap;
 
   @Override
-  public InternetAccessData getData(String state, String county) throws Exception {
+  public InternetAccessData getData(String state, String county)
+      throws IOException, URISyntaxException, InterruptedException, DataRetrievalException {
     return produceData(state, county);
   }
 
-  private InternetAccessData produceData(String state, String county) throws Exception {
+  private InternetAccessData produceData(String state, String county)
+      throws IOException, URISyntaxException, InterruptedException, DataRetrievalException {
     // Instantiate the state to state code HashMap and call for it to be filled.
     this.stateMap = new HashMap<>();
     this.getStateCodes();
@@ -35,62 +38,55 @@ public class ACSAPIDataSource implements APIDataSource{
     String percentage = getPercentageData(stateCode, countyCode);
     LocalDate currentDate = LocalDate.now();
     LocalTime currentTime = LocalTime.now();
-    // TODO: Change this portion since you need to cache now too (or maybe create new class?)
     return new InternetAccessData(state, county, currentDate, currentTime, percentage);
   }
 
   private void getStateCodes() throws URISyntaxException, IOException, InterruptedException {
-    try {
-      // Create an instance of a request. This is where we get the link to where we want our JSON
-      // file data.
-      HttpRequest buildStateCodeApiRequest =
-          HttpRequest.newBuilder()
-              .uri(new URI("https://api.census.gov/data/2010/dec/sf1?get=NAME&for=state:*"))
-              .GET()
-              .build();
-
-      // Send that API request then store the response in this variable.
-      HttpResponse<String> sentStateAPIRequest =
-          HttpClient.newBuilder()
-              .build()
-              .send(buildStateCodeApiRequest, HttpResponse.BodyHandlers.ofString());
-
-      // Save the API response as a String
-      String codes = sentStateAPIRequest.body();
-      Moshi moshi = new Moshi.Builder().build();
-      // Create a JsonAdapter, and turn the Json file into a HashMap
-      Type types = Types.newParameterizedType(List.class, List.class, String.class);
-      JsonAdapter<List<List<String>>> adaptedCodes = moshi.adapter(types);
-      // TODO: Think about changing the deserialization process into a object from a record.
-      List<List<String>> codesMatrix = adaptedCodes.fromJson(codes);
-      // Create a boolean to skip over the first iteration (the first iteration is [Names, State],
-      // thus since State is not an integer it must be skipped.
-      boolean firstIteration = true;
-      if (!codesMatrix.isEmpty()) {
-        for (List<String> entries : codesMatrix) {
-          if (firstIteration) {
-            firstIteration = false;
-            continue;
-          }
-          // Enter the entries into the stateCodes HashMap. Use toLowerCase() to make the entries
-          // case-insensitive.
-          this.stateMap.put(entries.get(0).toLowerCase(), entries.get(1));
+    // Create an instance of a request. This is where we get the link to where we want our JSON
+    // file data.
+    HttpRequest buildStateCodeApiRequest =
+        HttpRequest.newBuilder()
+            .uri(new URI("https://api.census.gov/data/2010/dec/sf1?get=NAME&for=state:*"))
+            .GET()
+            .build();
+    // TODO: urisyntaxexception
+    // Send that API request then store the response in this variable.
+    HttpResponse<String> sentStateAPIRequest =
+        HttpClient.newBuilder()
+            .build()
+            .send(buildStateCodeApiRequest, HttpResponse.BodyHandlers.ofString());
+    // TODO: interrupted exception
+    // Save the API response as a String
+    String codes = sentStateAPIRequest.body();
+    Moshi moshi = new Moshi.Builder().build();
+    // Create a JsonAdapter, and turn the Json file into a HashMap
+    Type types = Types.newParameterizedType(List.class, List.class, String.class);
+    JsonAdapter<List<List<String>>> adaptedCodes = moshi.adapter(types);
+    List<List<String>> codesMatrix = adaptedCodes.fromJson(codes);
+    // TODO: ioexception
+    // Create a boolean to skip over the first iteration (the first iteration is [Names, State],
+    // thus since State is not an integer it must be skipped.
+    boolean firstIteration = true;
+    // assert that the codeMatrix is not null (should never happen)
+    assert codesMatrix != null;
+    if (!codesMatrix.isEmpty()) {
+      for (List<String> entries : codesMatrix) {
+        if (firstIteration) {
+          firstIteration = false;
+          continue;
         }
+        // Enter the entries into the stateCodes HashMap. Use toLowerCase() to make the entries
+        // case-insensitive.
+        this.stateMap.put(entries.get(0).toLowerCase(), entries.get(1));
       }
-    } catch (Exception e) {
-      // TODO: Put something better in the catch block. Also check if the try-catch in handle is
-      // necessary.
-      System.err.println("Something went wong");
-      e.printStackTrace();
     }
   }
 
   private String getCountyCode(String stateCode, String county, String state)
-      throws URISyntaxException, IOException, InterruptedException {
+      throws URISyntaxException, IOException, InterruptedException, DataRetrievalException {
     // Create a request at the URL where the API is located.
     if (stateCode == null) {
-      // TODO: Return something better here, maybe an error?
-      return "";
+      throw new DataRetrievalException();
     }
     HttpRequest buildCensusAPIRequest =
         HttpRequest.newBuilder()
@@ -116,6 +112,7 @@ public class ACSAPIDataSource implements APIDataSource{
     JsonAdapter<List<List<String>>> adaptedCodes = moshi.adapter(types);
     List<List<String>> codesMatrix = adaptedCodes.fromJson(countyCodes);
     // check first if the List<List<String>> from the Json is empty
+    assert codesMatrix != null;
     if (!codesMatrix.isEmpty()) {
       // for every entry, if the county name given is equal to an entry, then we will return that
       // entry.
@@ -132,10 +129,10 @@ public class ACSAPIDataSource implements APIDataSource{
   }
 
   private String getPercentageData(String stateCode, String countyCode)
-      throws URISyntaxException, IOException, InterruptedException {
+      throws URISyntaxException, IOException, InterruptedException, DataRetrievalException {
     // TODO: Return something better here, as this would be an error.
     if (stateCode == null || countyCode == null) {
-      return "";
+      throw new DataRetrievalException();
     }
     HttpRequest buildDataAPIRequest =
         HttpRequest.newBuilder()
@@ -161,10 +158,13 @@ public class ACSAPIDataSource implements APIDataSource{
     Type types = Types.newParameterizedType(List.class, List.class, String.class);
     JsonAdapter<List<List<String>>> adaptedCodes = moshi.adapter(types);
     List<List<String>> codesMatrix = adaptedCodes.fromJson(dataCodes);
+    assert codesMatrix != null;
     List<String> data = codesMatrix.get(1);
     String percentage = data.get(1);
-    // TODO: Also do something here if percentage is null. Read through the google doc to figure out
-    // what error to throw.
+    // TODO: Check if the percentage is something crazy as well
+    if (percentage == null) {
+      throw new DataRetrievalException();
+    }
     return percentage;
   }
 

@@ -78,7 +78,7 @@ public class Server {
     // Setting up the handler for the GET /order and /activity endpoints
 
     // Notice this link alone leads to a 404... Why is that?
-    Server server = new Server(new CSVSource(), new CachingACSAPI(new ACSAPIDataSource()));
+    Server server = new Server(new CSVSource(), new CachingACSAPI(new ACSAPIDataSource(), 10, 2));
     System.out.println("Server started at http://localhost:" + port);
   }
 }
