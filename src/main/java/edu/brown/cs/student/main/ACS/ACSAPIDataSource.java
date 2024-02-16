@@ -17,20 +17,39 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author devonkearleng
+ * @version 1.0 - ACSAPIDataSource is the direct point of contact with the ACS API. It processes
+ * and fetches any data needed by the user, throwing errors in the process if any errors occur.
+ * */
 public class ACSAPIDataSource implements APIDataSource{
   private Map<String, String> stateMap;
 
+  public ACSAPIDataSource(){
+    // Instantiate the state to state code HashMap
+    this.stateMap = new HashMap<>();
+  }
+  /**
+   * @param state - State given by the user
+   * @param county - County given by the user
+   * @return - Returns an InternetAccessData, a record that holds all of the relevant data.
+   * */
   @Override
   public InternetAccessData getData(String state, String county)
       throws IOException, URISyntaxException, InterruptedException, DataRetrievalException {
     return produceData(state, county);
   }
-
+  /**
+   * @param state - State given by the user
+   * @param county - County given by the user
+   * @return - Returns an InternetAccessData, a record that holds all of the relevant data.
+   * */
   private InternetAccessData produceData(String state, String county)
       throws IOException, URISyntaxException, InterruptedException, DataRetrievalException {
-    // Instantiate the state to state code HashMap and call for it to be filled.
-    this.stateMap = new HashMap<>();
-    this.getStateCodes();
+    // Call for the stateMap to be filled if empty.
+    if (this.stateMap.isEmpty()){
+      this.getStateCodes();
+    }
     // get the county code from the state code and the county given (lowercase to remove
     // case-sensitivity)
     String stateCode = this.stateMap.get(state.toLowerCase());
@@ -41,6 +60,9 @@ public class ACSAPIDataSource implements APIDataSource{
     return new InternetAccessData(state, county, currentDate, currentTime, percentage);
   }
 
+  /**
+   * getStateCodes() is a method that will fill the stateMap HashMap if it is not filled (basically on first search)
+   * */
   private void getStateCodes() throws URISyntaxException, IOException, InterruptedException {
     // Create an instance of a request. This is where we get the link to where we want our JSON
     // file data.
@@ -82,12 +104,19 @@ public class ACSAPIDataSource implements APIDataSource{
     }
   }
 
+  /**
+   * @param stateCode - The stateCode given by the stateMap for the state given by the user
+   * @param state - The state given by the user
+   * @param county - The county given by the user
+   * @return - Returns a county code for the given county.
+   * */
   private String getCountyCode(String stateCode, String county, String state)
       throws URISyntaxException, IOException, InterruptedException, DataRetrievalException {
-    // Create a request at the URL where the API is located.
+    // If the stateCode is null, a DataRetrievalException should be thrown, as the data cannot be found for given input.
     if (stateCode == null) {
       throw new DataRetrievalException();
     }
+    // Create a request at the URL where the API is located.
     HttpRequest buildCensusAPIRequest =
         HttpRequest.newBuilder()
             .uri(
@@ -123,14 +152,17 @@ public class ACSAPIDataSource implements APIDataSource{
         }
       }
     }
-    // TODO: Figure out something to return if no entry matched. Maybe an error like in the gearup
-    // code? Also read the google doc for info as well
     return sentCountyAPIRequest.body();
   }
 
+  /**
+   * @param stateCode - stateCode for the API given by the stateMap HashMap for the given state.
+   * @param countyCode - countyCode for the API given by getCountyCode.
+   * @return - A string representing the percentage that has access to internet.
+   * */
   private String getPercentageData(String stateCode, String countyCode)
       throws URISyntaxException, IOException, InterruptedException, DataRetrievalException {
-    // TODO: Return something better here, as this would be an error.
+    // Checks if the stateCode or the countyCode is null. If so, throw a DataRetrievalException.
     if (stateCode == null || countyCode == null) {
       throw new DataRetrievalException();
     }
@@ -161,9 +193,14 @@ public class ACSAPIDataSource implements APIDataSource{
     assert codesMatrix != null;
     List<String> data = codesMatrix.get(1);
     String percentage = data.get(1);
-    // TODO: Check if the percentage is something crazy as well
+    // If percentage is null, we should throw a DataRetrievalException, as nothing coul dbe found.
     if (percentage == null) {
       throw new DataRetrievalException();
+    }
+    // If the percentage is a infeasible number, we should throw a URISyntaxException, since the API gave bad data
+    // This message means nothing, as it is handled in BroadbandHandler.
+    if (Double.parseDouble(percentage) < 0 || Double.parseDouble(percentage) > 100){
+      throw new URISyntaxException("bad data", "bad data");
     }
     return percentage;
   }

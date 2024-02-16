@@ -4,8 +4,8 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.Creators.CreatorFromString;
-import edu.brown.cs.student.main.DataSource.Broadband.BroadbandData;
-import edu.brown.cs.student.main.DataSource.Broadband.CSVSource;
+import edu.brown.cs.student.main.CSVDataSource.CSVData;
+import edu.brown.cs.student.main.CSVDataSource.CSVSource;
 import edu.brown.cs.student.main.Searcher;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
@@ -30,7 +30,7 @@ public class SearchCSVHandler implements Route {
     Moshi moshi = new Moshi.Builder().build();
     Type mapStringObject = Types.newParameterizedType(Map.class, String.class, Object.class);
     JsonAdapter<Map<String, Object>> adapter = moshi.adapter(mapStringObject);
-    JsonAdapter<BroadbandData> broadbandDataAdapter = moshi.adapter(BroadbandData.class);
+    JsonAdapter<CSVData> csvDataAdapter = moshi.adapter(CSVData.class);
     LinkedHashMap<String, Object> responseMap = new LinkedHashMap<>();
 
     List<List<String>> data = source.getParsedData();
@@ -105,7 +105,7 @@ public class SearchCSVHandler implements Route {
     responseMap.put("index", index);
     responseMap.put("indexType", indexType);
     responseMap.put(
-        "search_results", broadbandDataAdapter.toJson(new BroadbandData(searchResults)));
+        "search_results", csvDataAdapter.toJson(new CSVData(searchResults)));
     return adapter.toJson(responseMap);
   }
 }

@@ -3,8 +3,8 @@ package edu.brown.cs.student.main.Handlers;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
-import edu.brown.cs.student.main.DataSource.Broadband.BroadbandData;
-import edu.brown.cs.student.main.DataSource.Broadband.CSVSource;
+import edu.brown.cs.student.main.CSVDataSource.CSVData;
+import edu.brown.cs.student.main.CSVDataSource.CSVSource;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -26,11 +26,11 @@ public class ViewCSVHandler implements Route {
     // Replies will be Maps from String to Object. This isn't ideal; see reflection...
     Type mapStringObject = Types.newParameterizedType(Map.class, String.class, Object.class);
     JsonAdapter<Map<String, Object>> adapter = moshi.adapter(mapStringObject);
-    JsonAdapter<BroadbandData> broadbandDataAdapter = moshi.adapter(BroadbandData.class);
+    JsonAdapter<CSVData> csvDataAdapter = moshi.adapter(CSVData.class);
     Map<String, Object> responseMap = new HashMap<>();
 
-    BroadbandData data = new BroadbandData(source.getParsedData());
-    responseMap.put("data", broadbandDataAdapter.toJson(data));
+    CSVData data = new CSVData(source.getParsedData());
+    responseMap.put("data", csvDataAdapter.toJson(data));
     return adapter.toJson(responseMap);
   }
 }
