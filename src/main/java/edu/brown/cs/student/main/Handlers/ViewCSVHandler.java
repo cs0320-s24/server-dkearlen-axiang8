@@ -29,7 +29,7 @@ public class ViewCSVHandler implements Route {
     Map<String, Object> responseMap = new HashMap<>();
 
     BroadbandData data = new BroadbandData(source.getParsedData());
-    responseMap.put("broadband percentages", broadbandDataAdapter.toJson(data));
+    responseMap.put("data", broadbandDataAdapter.toJson(data));
     return adapter.toJson(responseMap);
   }
 }

@@ -28,7 +28,6 @@ public class LoadCSVHandler implements Route {
 
   @Override
   public Object handle(Request request, Response response) {
-    System.out.println("in handle of Load");
     Moshi moshi = new Moshi.Builder().build();
     // Replies will be Maps from String to Object. This isn't ideal; see reflection...
     Type mapStringObject = Types.newParameterizedType(Map.class, String.class, Object.class);

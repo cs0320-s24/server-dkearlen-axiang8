@@ -17,7 +17,6 @@ public class CSVSource implements CensusDataSource {
   @Override
   public List<List<String>> retrieveAndParse(String filePath, CreatorFromString creator)
       throws IOException, MalformedCSVException {
-    System.out.println("successful call to CSV Source getBroadband data");
     FileReader reader = new FileReader(filePath);
     Parser parser = new Parser(reader, creator);
     parsedData = parser.parseCSV();
