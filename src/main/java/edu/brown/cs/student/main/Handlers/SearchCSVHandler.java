@@ -9,6 +9,7 @@ import edu.brown.cs.student.main.DataSource.Broadband.CensusDataSource;
 import edu.brown.cs.student.main.Searcher;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import spark.Request;
@@ -31,7 +32,7 @@ public class SearchCSVHandler implements Route {
     Type mapStringObject = Types.newParameterizedType(Map.class, String.class, Object.class);
     JsonAdapter<Map<String, Object>> adapter = moshi.adapter(mapStringObject);
     JsonAdapter<BroadbandData> broadbandDataAdapter = moshi.adapter(BroadbandData.class);
-    Map<String, Object> responseMap = new HashMap<>();
+    LinkedHashMap<String, Object> responseMap = new LinkedHashMap<>();
 
     List<List<String>> data = source.getParsedData();
 
@@ -46,37 +47,66 @@ public class SearchCSVHandler implements Route {
     System.out.println("index: " + index);
 
     List<List<String>> searchResults;
-    if (indexType == null || index == null) {
+    if (indexType == null && index == null) {
       searchResults = searcher.search(target);
-    } else if (indexType.equalsIgnoreCase("string")) {
-      searchResults = searcher.search(target, index);
+    }
+    else if (indexType == null) {
+      responseMap.put("type", "error");
+      responseMap.put("error_type", "Must declare index type, either 'string' or 'int', along with index: " + target);
+      return adapter.toJson(responseMap);
+    }
+    else if (indexType.equalsIgnoreCase("string")) {
+      if (creator.getHeaderRow().contains(index)) {
+        searchResults = searcher.search(target, index);
+      }
+      else {
+        responseMap.put("type", "error");
+        StringBuilder columnsAvailable = new StringBuilder();
+        for (String column : creator.getHeaderRow()) {
+          columnsAvailable.append(column).append(", ");
+        }
+        columnsAvailable.setLength(columnsAvailable.length() - 2);
+        responseMap.put("type", "error");
+        responseMap.put("error_type", "Index not found. Columns available: " + columnsAvailable);
+        return adapter.toJson(responseMap);
+      }
     } else if (indexType.equalsIgnoreCase("int")) {
       try {
         searchResults = searcher.search(target, Integer.parseInt(index));
       } catch (NumberFormatException e) {
+        responseMap.put("type", "error");
+        responseMap.put("error_type", "Index is not a valid int");
+        responseMap.put("index", index);
         responseMap.put("target", target);
         responseMap.put("headers", hasHeaders);
-        responseMap.put("index", index);
         responseMap.put("indexType", indexType);
+        return adapter.toJson(responseMap);
+      }
+      catch (IllegalArgumentException e) {
         responseMap.put("type", "error");
-        responseMap.put("error_type", "index_not_an_int");
+        responseMap.put("error_type", "Index must be greater than 0, less than " + creator.getHeaderRow().size());
+        responseMap.put("index", index);
+        responseMap.put("target", target);
+        responseMap.put("headers", hasHeaders);
+        responseMap.put("indexType", indexType);
         return adapter.toJson(responseMap);
       }
     } else {
+      responseMap.put("type", "error");
+      responseMap.put("error_type", "Invalid index type. Must be either 'int' or 'string'");
+      responseMap.put("index", index);
       responseMap.put("target", target);
       responseMap.put("headers", hasHeaders);
-      responseMap.put("index", index);
       responseMap.put("indexType", indexType);
-      responseMap.put("type", "error");
-      responseMap.put("error_type", "invalid_index_type");
       return adapter.toJson(responseMap);
     }
+    responseMap.put("type", "success");
     responseMap.put("target", target);
     responseMap.put("headers", hasHeaders);
     responseMap.put("index", index);
     responseMap.put("indexType", indexType);
     responseMap.put(
-        "filtered_search_results", broadbandDataAdapter.toJson(new BroadbandData(searchResults)));
+        "search_results", broadbandDataAdapter.toJson(new BroadbandData(searchResults)));
     return adapter.toJson(responseMap);
   }
 }

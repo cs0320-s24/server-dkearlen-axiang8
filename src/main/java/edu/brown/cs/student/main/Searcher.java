@@ -38,18 +38,13 @@ public class Searcher {
   }
 
   public List<List<String>> search(String value, int columnIdentifier) {
-    System.out.println("searching int colId. target: " + value + " colId: " + columnIdentifier);
     this.matchFound = false;
     List<List<String>> returnList = new ArrayList<>();
-    System.out.println("before if statements");
     if (hasHeaders) {
-      System.out.println("in has headers");
       data.remove(0);
-      System.out.println("successful remove");
     }
     System.out.println("header row size " + creator.getHeaderRow().size());
-    if (columnIdentifier > creator.getHeaderRow().size()) {
-      System.out.println("throwing exception");
+    if (columnIdentifier > creator.getHeaderRow().size() || columnIdentifier < 0) {
       throw new IllegalArgumentException();
     }
     System.out.println("at bottom of function");

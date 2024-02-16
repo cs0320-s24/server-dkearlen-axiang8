@@ -7,7 +7,6 @@ import edu.brown.cs.student.main.ACS.APIDataSource;
 import edu.brown.cs.student.main.ACS.CachingACSAPI;
 import edu.brown.cs.student.main.Creators.CreatorFromString;
 import edu.brown.cs.student.main.DataSource.Broadband.CSVSource;
-import edu.brown.cs.student.main.DataSource.Broadband.CensusDataSource;
 import edu.brown.cs.student.main.Handlers.BroadbandHandler;
 import edu.brown.cs.student.main.Handlers.LoadCSVHandler;
 import edu.brown.cs.student.main.Handlers.SearchCSVHandler;
@@ -28,12 +27,12 @@ public class Server {
   // TODO 0: Read through this class and determine the shape of this project...
   // What are the endpoints that we can access... What happens if you go to them?
 
-  private final CensusDataSource source;
+  private final CSVSource csvSource;
   private final APIDataSource apiSource;
   static final int port = 3030;
 
-  public Server(CensusDataSource dataSource, APIDataSource apiDataSource) {
-    source = dataSource;
+  public Server(CSVSource csvDataSource, APIDataSource apiDataSource) {
+    csvSource = csvDataSource;
     this.apiSource = apiDataSource;
     Spark.port(port);
 
@@ -44,11 +43,10 @@ public class Server {
         });
 
     CreatorFromString creator = new CreatorFromString();
-    LoadCSVHandler load = new LoadCSVHandler(this.source, creator);
+    LoadCSVHandler load = new LoadCSVHandler(this.csvSource, creator);
     Spark.get("loadcsv", load);
-    // TODO: Ensure that passing this.source to SearchCSVHandler and ViewCSVHandler is necessary.
-    Spark.get("searchcsv", new SearchCSVHandler(this.source, creator));
-    Spark.get("viewcsv", new ViewCSVHandler(this.source));
+    Spark.get("searchcsv", new SearchCSVHandler(this.csvSource, creator));
+    Spark.get("viewcsv", new ViewCSVHandler(this.csvSource));
     Spark.get("broadband", new BroadbandHandler(this.apiSource));
 
     Spark.init();

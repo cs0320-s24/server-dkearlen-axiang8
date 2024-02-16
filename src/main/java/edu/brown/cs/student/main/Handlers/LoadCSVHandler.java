@@ -40,7 +40,7 @@ public class LoadCSVHandler implements Route {
     if (filePath.isEmpty()) {
       responseMap.put("filePath", filePath);
       responseMap.put("type", "error");
-      responseMap.put("error_type", "empty_file_path");
+      responseMap.put("error_type", "Empty file path.");
       return adapter.toJson(responseMap);
     } else {
       file = new File(filePath);
@@ -50,7 +50,7 @@ public class LoadCSVHandler implements Route {
     if (!file.exists() || !file.isFile()) {
       responseMap.put("filePath", filePath);
       responseMap.put("type", "error");
-      responseMap.put("error_type", "file_not_found");
+      responseMap.put("error_type", "File not found.");
       return adapter.toJson(responseMap);
     }
 
@@ -61,7 +61,7 @@ public class LoadCSVHandler implements Route {
     if (!fileAbsolutePath.contains(File.separator + dataDirectory)) {
       responseMap.put("filePath", filePath);
       responseMap.put("type", "error");
-      responseMap.put("error_type", "file_not_in_data_directory");
+      responseMap.put("error_type", "File is not in data directory.");
       return adapter.toJson(responseMap);
     }
     try {
@@ -73,25 +73,25 @@ public class LoadCSVHandler implements Route {
     } catch (IllegalArgumentException e) {
       responseMap.put("filepath", filePath);
       responseMap.put("type", "error");
-      responseMap.put("error_type", "invalid_file");
+      responseMap.put("error_type", "Invalid File.");
       responseMap.put("details", e.getMessage());
       return adapter.toJson(responseMap);
     } catch (FileNotFoundException e) {
       responseMap.put("filepath", filePath);
       responseMap.put("type", "error");
-      responseMap.put("error_type", "file_not_found");
+      responseMap.put("error_type", "File not found.");
       responseMap.put("details", e.getMessage());
       return adapter.toJson(responseMap);
     } catch (MalformedCSVException e) {
       responseMap.put("filepath", filePath);
       responseMap.put("type", "error");
-      responseMap.put("error_type", "malformed_csv");
+      responseMap.put("error_type", "Cannot input malformed CSV.");
       responseMap.put("details", e.getMessage());
       return adapter.toJson(responseMap);
     } catch (IOException e) {
       responseMap.put("filepath", filePath);
       responseMap.put("type", "error");
-      responseMap.put("error_type", "unreadable_file");
+      responseMap.put("error_type", "Unreadable file.");
       responseMap.put("details", e.getMessage());
       return adapter.toJson(responseMap);
     }

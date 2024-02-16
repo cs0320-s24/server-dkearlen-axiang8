@@ -2,6 +2,7 @@ package edu.brown.cs.student.main.Creators;
 
 import edu.brown.cs.student.main.Exceptions.FactoryFailureException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class CreatorFromString implements CreatorFromRow<List<String>> {
@@ -25,14 +26,13 @@ public class CreatorFromString implements CreatorFromRow<List<String>> {
    * @return - returns a List<String> to use in CSVSearcher
    */
   public List<String> getRow(Integer rowID) {
-    return this.rows.get(rowID);
+    return Collections.unmodifiableList(this.rows.get(rowID));
   }
 
   /**
    * @return - returns a List<String> to use in CSVSearcher. Specifically the first row.
    */
   public List<String> getHeaderRow() {
-    System.out.println("getting header rows");
-    return this.rows.get(0);
+    return Collections.unmodifiableList(rows.get(0));
   }
 }

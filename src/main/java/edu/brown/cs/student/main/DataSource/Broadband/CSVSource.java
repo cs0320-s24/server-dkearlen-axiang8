@@ -5,6 +5,7 @@ import edu.brown.cs.student.main.Exceptions.MalformedCSVException;
 import edu.brown.cs.student.main.Parser;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 public class CSVSource implements CensusDataSource {
@@ -24,7 +25,7 @@ public class CSVSource implements CensusDataSource {
   }
 
   public List<List<String>> getParsedData() {
-    return parsedData;
+    return Collections.unmodifiableList(parsedData);
   }
   // potentially overload this method that can use API and have state code and county code as
   // parameters
