@@ -3,21 +3,19 @@ package edu.brown.cs.student.main.DataSource.Broadband;
 import edu.brown.cs.student.main.Creators.CreatorFromString;
 import edu.brown.cs.student.main.Exceptions.MalformedCSVException;
 import edu.brown.cs.student.main.Parser;
-
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
 public class CSVSource implements CensusDataSource {
 
-  public CSVSource() {
+  public CSVSource() {}
 
-  }
   private static List<List<String>> parsedData;
 
   @Override
-  public List<List<String>> retrieveAndParse(String filePath, CreatorFromString creator) throws IOException, MalformedCSVException {
+  public List<List<String>> retrieveAndParse(String filePath, CreatorFromString creator)
+      throws IOException, MalformedCSVException {
     System.out.println("successful call to CSV Source getBroadband data");
     FileReader reader = new FileReader(filePath);
     Parser parser = new Parser(reader, creator);

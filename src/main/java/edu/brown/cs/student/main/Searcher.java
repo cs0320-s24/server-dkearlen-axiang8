@@ -11,8 +11,7 @@ public class Searcher {
 
   private boolean matchFound = false;
 
-  public Searcher(
-      List<List<String>> d, CreatorFromString creatorFromString, boolean hasHeaders) {
+  public Searcher(List<List<String>> d, CreatorFromString creatorFromString, boolean hasHeaders) {
     data = d;
     creator = creatorFromString;
     this.hasHeaders = hasHeaders;

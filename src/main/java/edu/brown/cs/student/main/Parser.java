@@ -1,6 +1,5 @@
 package edu.brown.cs.student.main;
 
-import edu.brown.cs.student.main.Creators.CreatorFromRow;
 import edu.brown.cs.student.main.Creators.CreatorFromString;
 import edu.brown.cs.student.main.Exceptions.FactoryFailureException;
 import edu.brown.cs.student.main.Exceptions.MalformedCSVException;

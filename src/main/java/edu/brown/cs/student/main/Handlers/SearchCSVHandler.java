@@ -48,11 +48,9 @@ public class SearchCSVHandler implements Route {
     List<List<String>> searchResults;
     if (indexType == null || index == null) {
       searchResults = searcher.search(target);
-    }
-    else if (indexType.equalsIgnoreCase("string")) {
+    } else if (indexType.equalsIgnoreCase("string")) {
       searchResults = searcher.search(target, index);
-    }
-    else if (indexType.equalsIgnoreCase("int")) {
+    } else if (indexType.equalsIgnoreCase("int")) {
       try {
         searchResults = searcher.search(target, Integer.parseInt(index));
       } catch (NumberFormatException e) {
@@ -64,8 +62,7 @@ public class SearchCSVHandler implements Route {
         responseMap.put("error_type", "index_not_an_int");
         return adapter.toJson(responseMap);
       }
-    }
-    else {
+    } else {
       responseMap.put("target", target);
       responseMap.put("headers", hasHeaders);
       responseMap.put("index", index);
