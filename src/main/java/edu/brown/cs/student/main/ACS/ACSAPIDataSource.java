@@ -71,13 +71,11 @@ public class ACSAPIDataSource implements APIDataSource{
             .uri(new URI("https://api.census.gov/data/2010/dec/sf1?get=NAME&for=state:*"))
             .GET()
             .build();
-    // TODO: urisyntaxexception
     // Send that API request then store the response in this variable.
     HttpResponse<String> sentStateAPIRequest =
         HttpClient.newBuilder()
             .build()
             .send(buildStateCodeApiRequest, HttpResponse.BodyHandlers.ofString());
-    // TODO: interrupted exception
     // Save the API response as a String
     String codes = sentStateAPIRequest.body();
     Moshi moshi = new Moshi.Builder().build();
@@ -85,7 +83,6 @@ public class ACSAPIDataSource implements APIDataSource{
     Type types = Types.newParameterizedType(List.class, List.class, String.class);
     JsonAdapter<List<List<String>>> adaptedCodes = moshi.adapter(types);
     List<List<String>> codesMatrix = adaptedCodes.fromJson(codes);
-    // TODO: ioexception
     // Create a boolean to skip over the first iteration (the first iteration is [Names, State],
     // thus since State is not an integer it must be skipped.
     boolean firstIteration = true;

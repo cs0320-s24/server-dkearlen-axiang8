@@ -48,7 +48,7 @@ public class BroadbandHandler implements Route {
     String county = request.queryParams("county");
     try {
       if (checkParams(state, county) == -1){
-        return adapter.toJson(responseMap);
+        return new APIFailureResponse(this.responseMap).serialize();
       }
       InternetAccessData data = this.dataSource.getData(state, county);
       this.responseMap.put("Date", data.date().toString());
@@ -151,17 +151,17 @@ public class BroadbandHandler implements Route {
    * and a 0 on non-error.
    * */
   private Integer checkParams(String state, String county){
-    if (state == null && county == null){
+    if ((state == null || state.equals("")) && (county == null || county.equals(""))){
       this.responseMap.put("result", "error");
       this.responseMap.put("error_type", "error_bad_request");
       this.responseMap.put("error_message", "Both state and county were not given!");
       return -1;
-    } else if (state == null){
+    } else if (state == null || state.equals("")){
       this.responseMap.put("result", "error");
       responseMap.put("error_type", "error_bad_request");
       responseMap.put("error_message", "State was not given!");
       return -1;
-    } else if (county == null){
+    } else if (county == null || county.equals("")){
       this.responseMap.put("result", "error");
       this.responseMap.put("error_type", "error_bad_request");
       this.responseMap.put("error_message", "County was not given!");
