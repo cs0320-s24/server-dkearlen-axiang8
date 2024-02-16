@@ -4,6 +4,7 @@ import static spark.Spark.after;
 
 import edu.brown.cs.student.main.ACS.ACSAPIDataSource;
 import edu.brown.cs.student.main.ACS.APIDataSource;
+import edu.brown.cs.student.main.ACS.CachingACSAPI;
 import edu.brown.cs.student.main.Creators.CreatorFromString;
 import edu.brown.cs.student.main.DataSource.Broadband.CSVSource;
 import edu.brown.cs.student.main.DataSource.Broadband.CensusDataSource;
@@ -77,7 +78,7 @@ public class Server {
     // Setting up the handler for the GET /order and /activity endpoints
 
     // Notice this link alone leads to a 404... Why is that?
-    Server server = new Server(new CSVSource(), new ACSAPIDataSource());
+    Server server = new Server(new CSVSource(), new CachingACSAPI(new ACSAPIDataSource()));
     System.out.println("Server started at http://localhost:" + port);
   }
 }

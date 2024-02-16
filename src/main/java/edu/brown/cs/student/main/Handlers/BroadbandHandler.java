@@ -32,6 +32,7 @@ public class BroadbandHandler implements Route {
     // Use Moshi to turn the Map into a Json object to display on the web page.
     // TODO: Change getting the data straight from the ACSAPIDataSource to the Caching proxy class
     InternetAccessData data = this.dataSource.getData(state, county);
+    System.out.println(data);
     Moshi moshi = new Moshi.Builder().build();
     Type mapStringObject = Types.newParameterizedType(Map.class, String.class, Object.class);
     JsonAdapter<Map<String, Object>> adapter = moshi.adapter(mapStringObject);

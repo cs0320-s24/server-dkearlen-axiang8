@@ -8,8 +8,8 @@ import java.util.concurrent.TimeUnit;
 
 public class CachingACSAPI implements APIDataSource {
   private final APIDataSource wrappedSource;
-  private final LoadingCache<String, InternetAccessData> cache;
-  public CachingACSAPI(APIDataSource dataSource, String state, String county){
+  private LoadingCache<String, InternetAccessData> cache;
+  public CachingACSAPI(APIDataSource dataSource){
     this.wrappedSource = dataSource;
 
     this.cache = CacheBuilder.newBuilder()
@@ -26,14 +26,22 @@ public class CachingACSAPI implements APIDataSource {
               @Override
               public InternetAccessData load(String key) throws Exception {
                 // If this isn't yet present in the cache, load it:
-                return wrappedSource.getData(state, county);
+                System.out.println(key);
+                String [] args = key.split(":");
+                System.out.println(args[0]);
+                System.out.println(args[1]);
+                // TODO: have it simply return getData once bug is fixed
+                InternetAccessData data =  wrappedSource.getData(args[0], args[1]);
+                System.out.println(data);
+                return data;
               }
             });
   }
 
   @Override
   public InternetAccessData getData(String state, String county) throws Exception {
-    // TODO: Return something here.
-    return null;
+    String compositeKey = state + ":" + county;
+    InternetAccessData data = this.cache.getUnchecked(compositeKey);
+    return data;
   }
 }
