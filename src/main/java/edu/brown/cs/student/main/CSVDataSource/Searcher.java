@@ -43,7 +43,6 @@ public class Searcher {
       throw new IllegalArgumentException();
     }
     if (hasHeaders) {
-      System.out.println("removing headers");
       data.remove(0);
     }
     return findMatchWithIndex(value, returnList, columnIdentifier);
@@ -66,7 +65,6 @@ public class Searcher {
 
   private List<List<String>> findMatchWithIndex(
       String value, List<List<String>> returnList, int index) {
-    System.out.println("in find match with index");
     for (List<String> object : data) {
       if (object.get(index).toLowerCase().contains((value.toLowerCase()))) {
         System.out.println(object);

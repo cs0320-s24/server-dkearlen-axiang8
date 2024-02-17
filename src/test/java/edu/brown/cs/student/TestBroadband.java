@@ -184,9 +184,9 @@ public class TestBroadband {
   /**
    * testBroadbandHandler tests the method checkParams, which is normally behavior that can only be
    * seen when testing it live through the server.
-   **/
+   */
   @Test
-  public void testBroadbandHandler(){
+  public void testBroadbandHandler() {
     CachingACSAPI cachingACSAPI = new CachingACSAPI(new ACSAPIDataSource(), 10, 1);
     BroadbandHandler broadbandHandler = new BroadbandHandler(cachingACSAPI);
 

@@ -17,7 +17,8 @@ utilizes the Parser class and is used by LoadCSV, and the getParsedData() method
 defensive programming purposes. 
 
 # Errors/Bugs
-N/A
+One of the tests in TestSearch, specifically, testSearchCSVWithUnsuccessfulLoad(), passes when running it individually
+but does not pass when running Maven or the file as a whole.
 
 # Tests
 For broadband, we had three testing methods, one that tested normal input, specifically that it was non-case sensitive, another that tested malformed input,

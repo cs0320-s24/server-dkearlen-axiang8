@@ -83,14 +83,15 @@ public class TestSearch {
   public void testSearchCSVWithUnsuccessfulLoad() throws IOException {
     HttpURLConnection clientConnection =
         tryRequest(
-            "loadcsv?filepath=/Users/austinxiang/Desktop/brown/cs32/server-dkearlen-axiang8/RI_Income.csv");
+            "loadcsv?filepath=/Users/austinxiang/Desktop/brown/cs32/server-dkearlen-axiang8/RI.csv");
     assertEquals(200, clientConnection.getResponseCode());
     HttpURLConnection clientConnection1 = tryRequest("searchcsv?target=69");
     assertEquals(200, clientConnection1.getResponseCode());
     SearchCSVHandler.CSVFailureResponse response =
-        moshi
-            .adapter(SearchCSVHandler.CSVFailureResponse.class)
-            .fromJson(new Buffer().readFrom(clientConnection1.getInputStream()));
+            moshi
+                    .adapter(SearchCSVHandler.CSVFailureResponse.class)
+                    .fromJson(new Buffer().readFrom(clientConnection1.getInputStream()));
+    System.out.println(response);
     assertEquals("error", response.response_type());
     assertEquals("No CSV loaded.", response.responseMap().get("error_type"));
   }
@@ -108,7 +109,7 @@ public class TestSearch {
             .adapter(SearchCSVHandler.CSVSuccessResponse.class)
             .fromJson(new Buffer().readFrom(clientConnection1.getInputStream()));
     assertEquals(
-        "{type=search_success, target=69, headers=false, search_results={\"data\":[[\"Barrington\",\"130,455.00\",\"154,441.00\",\"69,917.00\"],[\"Cranston\",\"77,145.00\",\"95,763.00\",\"38,269.00\"],[\"West Warwick\",\"62,649.00\",\"80,699.00\",\"36,148.00\"]]}}",
+        "{type=search_success, target=69, headers=true, search_results={\"data\":[[\"Barrington\",\"130,455.00\",\"154,441.00\",\"69,917.00\"],[\"Cranston\",\"77,145.00\",\"95,763.00\",\"38,269.00\"],[\"West Warwick\",\"62,649.00\",\"80,699.00\",\"36,148.00\"]]}}",
         response.responseMap().toString());
   }
 
@@ -170,8 +171,7 @@ public class TestSearch {
         tryRequest(
             "loadcsv?filepath=/Users/austinxiang/Desktop/brown/cs32/server-dkearlen-axiang8/data/RI_Income.csv");
     assertEquals(200, clientConnection.getResponseCode());
-    HttpURLConnection clientConnection1 =
-        tryRequest("searchcsv?target=33&headers=true&index=hello");
+    HttpURLConnection clientConnection1 = tryRequest("searchcsv?target=33&headers=true&index=1");
     assertEquals(200, clientConnection1.getResponseCode());
     SearchCSVHandler.CSVFailureResponse response =
         moshi
