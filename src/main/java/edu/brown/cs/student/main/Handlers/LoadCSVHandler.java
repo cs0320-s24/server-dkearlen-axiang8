@@ -40,59 +40,102 @@ public class LoadCSVHandler implements Route {
       responseMap.put("filePath", filePath);
       responseMap.put("type", "error");
       responseMap.put("error_type", "Empty file path.");
-      return adapter.toJson(responseMap);
+      return new LoadCSVHandler.CSVFailureResponse(responseMap).serialize();
     } else {
       file = new File(filePath);
     }
 
+    String dataDirectory = "data";
+
+    // Ensure that the file is within the "data" directory
+    if (!filePath.contains(File.separator + dataDirectory)) {
+      responseMap.put("filePath", filePath);
+      responseMap.put("type", "error");
+      responseMap.put("error_type", "File is not in data directory.");
+      return new LoadCSVHandler.CSVFailureResponse(responseMap).serialize();
+    }
     // Ensure that the file exists and is a file (not a directory)
     if (!file.exists() || !file.isFile()) {
       responseMap.put("filePath", filePath);
       responseMap.put("type", "error");
       responseMap.put("error_type", "File not found.");
-      return adapter.toJson(responseMap);
-    }
-
-    String dataDirectory = "data";
-    String fileAbsolutePath = file.getAbsolutePath();
-
-    // Ensure that the file is within the "data" directory
-    if (!fileAbsolutePath.contains(File.separator + dataDirectory)) {
-      responseMap.put("filePath", filePath);
-      responseMap.put("type", "error");
-      responseMap.put("error_type", "File is not in data directory.");
-      return adapter.toJson(responseMap);
+      return new LoadCSVHandler.CSVFailureResponse(responseMap).serialize();
     }
     try {
       CSVData data = new CSVData(source.retrieveAndParse(filePath, creator));
       // Building responses *IS* the job of this class:
       responseMap.put("type", "load_success");
       // responseMap.put("broadband percentages", broadbandDataAdapter.toJson(data));
-      return adapter.toJson(responseMap);
+      return new LoadCSVHandler.CSVSuccessResponse(responseMap).serialize();
     } catch (IllegalArgumentException e) {
       responseMap.put("filepath", filePath);
       responseMap.put("type", "error");
       responseMap.put("error_type", "Invalid File.");
       responseMap.put("details", e.getMessage());
-      return adapter.toJson(responseMap);
+      return new LoadCSVHandler.CSVFailureResponse(responseMap).serialize();
     } catch (FileNotFoundException e) {
       responseMap.put("filepath", filePath);
       responseMap.put("type", "error");
       responseMap.put("error_type", "File not found.");
       responseMap.put("details", e.getMessage());
-      return adapter.toJson(responseMap);
+      return new LoadCSVHandler.CSVFailureResponse(responseMap).serialize();
     } catch (MalformedCSVException e) {
       responseMap.put("filepath", filePath);
       responseMap.put("type", "error");
       responseMap.put("error_type", "Cannot input malformed CSV.");
       responseMap.put("details", e.getMessage());
-      return adapter.toJson(responseMap);
+      return new LoadCSVHandler.CSVFailureResponse(responseMap).serialize();
     } catch (IOException e) {
       responseMap.put("filepath", filePath);
       responseMap.put("type", "error");
       responseMap.put("error_type", "Unreadable file.");
       responseMap.put("details", e.getMessage());
-      return adapter.toJson(responseMap);
+      return new LoadCSVHandler.CSVFailureResponse(responseMap).serialize();
+    }
+  }
+  public record CSVSuccessResponse(String response_type, Map<String, Object> responseMap) {
+    public CSVSuccessResponse(Map<String, Object> responseMap) {
+      this("success", responseMap);
+    }
+    /**
+     * @return this response, serialized as Json
+     */
+    String serialize() {
+      try {
+        // Initialize Moshi which takes in this class and returns it as JSON!
+        Moshi moshi = new Moshi.Builder().build();
+        JsonAdapter<LoadCSVHandler.CSVSuccessResponse> adapter = moshi.adapter(LoadCSVHandler.CSVSuccessResponse.class);
+        return adapter.toJson(this);
+      } catch (Exception e) {
+        // For debugging purposes, show in the console _why_ this fails
+        // Otherwise we'll just get an error 500 from the API in integration
+        // testing.
+        e.printStackTrace();
+        throw e;
+      }
+    }
+  }
+
+  public record CSVFailureResponse(String response_type, Map<String, Object> responseMap) {
+    public CSVFailureResponse(Map<String, Object> responseMap) {
+      this("error", responseMap);
+    }
+    /**
+     * @return this response, serialized as Json
+     */
+    String serialize() {
+      try {
+        // Initialize Moshi which takes in this class and returns it as JSON!
+        Moshi moshi = new Moshi.Builder().build();
+        JsonAdapter<LoadCSVHandler.CSVFailureResponse> adapter = moshi.adapter(LoadCSVHandler.CSVFailureResponse.class);
+        return adapter.toJson(this);
+      } catch (Exception e) {
+        // For debugging purposes, show in the console _why_ this fails
+        // Otherwise we'll just get an error 500 from the API in integration
+        // testing.
+        e.printStackTrace();
+        throw e;
+      }
     }
   }
 }

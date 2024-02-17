@@ -29,6 +29,7 @@ public class Server {
 
   private final CSVSource csvSource;
   private final APIDataSource apiSource;
+  private static CreatorFromString creator = new CreatorFromString();
   static final int port = 3030;
 
   public Server(CSVSource csvDataSource, APIDataSource apiDataSource) {
@@ -42,7 +43,6 @@ public class Server {
           response.header("Access-Control-Allow-Methods", "*");
         });
 
-    CreatorFromString creator = new CreatorFromString();
     LoadCSVHandler load = new LoadCSVHandler(this.csvSource, creator);
     Spark.get("loadcsv", load);
     Spark.get("searchcsv", new SearchCSVHandler(this.csvSource, creator));

@@ -22,7 +22,10 @@ public class CSVSource {
     return parsedData;
   }
 
-  public List<List<String>> getParsedData() {
+  public List<List<String>> getParsedData() throws IOException {
+    if (parsedData == null) {
+      throw new IOException();
+    }
     return Collections.unmodifiableList(parsedData);
   }
   // potentially overload this method that can use API and have state code and county code as
