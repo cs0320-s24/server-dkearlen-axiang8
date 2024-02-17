@@ -1,4 +1,4 @@
-package edu.brown.cs.student.main.Handlers;
+package edu.brown.cs.student.main.ServerAndHandlers;
 
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.squareup.moshi.JsonAdapter;
@@ -29,6 +29,7 @@ public class BroadbandHandler implements Route {
   // This is the constructor for BroadbandHandler
   public BroadbandHandler(APIDataSource dataSource) {
     this.dataSource = dataSource;
+    this.responseMap = new HashMap<>();
   }
   /**
    * @param request - The request that a user inputs when using the server and specifying the
@@ -40,10 +41,10 @@ public class BroadbandHandler implements Route {
   @Override
   public Object handle(Request request, Response response) {
     // Use Moshi to turn the Map into a Json object to display on the web page.
+    this.responseMap.clear();
     Moshi moshi = new Moshi.Builder().build();
     Type mapStringObject = Types.newParameterizedType(Map.class, String.class, Object.class);
     JsonAdapter<Map<String, Object>> adapter = moshi.adapter(mapStringObject);
-    this.responseMap = new HashMap<>();
     // Put the arguments into a set of Strings.
     String state = request.queryParams("state");
     String county = request.queryParams("county");
@@ -159,7 +160,7 @@ public class BroadbandHandler implements Route {
    * @return - Returns an Integer specifying if there was an error. Returns a -1 on error and a 0 on
    *     non-error.
    */
-  private Integer checkParams(String state, String county) {
+  public Integer checkParams(String state, String county) {
     if ((state == null || state.equals("")) && (county == null || county.equals(""))) {
       this.responseMap.put("result", "error");
       this.responseMap.put("error_type", "error_bad_request");

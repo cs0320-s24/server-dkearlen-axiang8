@@ -2,7 +2,6 @@ package edu.brown.cs.student.main.CSVDataSource;
 
 import edu.brown.cs.student.main.Creators.CreatorFromString;
 import edu.brown.cs.student.main.Exceptions.MalformedCSVException;
-import edu.brown.cs.student.main.Parser;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collections;

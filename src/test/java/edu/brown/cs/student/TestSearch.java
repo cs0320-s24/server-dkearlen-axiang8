@@ -6,18 +6,22 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.CSVDataSource.CSVSource;
+import edu.brown.cs.student.main.CSVDataSource.Searcher;
 import edu.brown.cs.student.main.Creators.CreatorFromString;
-import edu.brown.cs.student.main.Handlers.LoadCSVHandler;
-import edu.brown.cs.student.main.Handlers.SearchCSVHandler;
-import edu.brown.cs.student.main.Handlers.ViewCSVHandler;
+import edu.brown.cs.student.main.ServerAndHandlers.LoadCSVHandler;
+import edu.brown.cs.student.main.ServerAndHandlers.SearchCSVHandler;
+import edu.brown.cs.student.main.ServerAndHandlers.ViewCSVHandler;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import okio.Buffer;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +42,6 @@ public class TestSearch {
 
   @BeforeAll
   public static void setup_before_everything() {
-    Spark.port(0);
     Logger.getLogger("").setLevel(Level.WARNING); // empty name = root logger
   }
 
@@ -58,6 +61,11 @@ public class TestSearch {
     Spark.unmap("searchcsv");
     Spark.unmap("viewcsv");
     Spark.awaitStop(); // don't proceed until the server is stopped
+  }
+
+  @AfterAll
+  public static void endServer() {
+    Spark.stop();
   }
 
   private static HttpURLConnection tryRequest(String apiCall) throws IOException {
@@ -227,5 +235,24 @@ public class TestSearch {
     assertEquals(
         "Invalid index type. Must be either 'int' or 'string'",
         response.responseMap().get("error_type"));
+  }
+
+  @Test
+  public void unitTestSearch() {
+    List<List<String>> strings = new ArrayList<>();
+    // Creating inner lists
+    List<String> innerList1 = new ArrayList<>();
+    innerList1.add("Food Name");
+    innerList1.add("Food Type");
+
+    List<String> innerList2 = new ArrayList<>();
+    innerList2.add("Pizza");
+    innerList2.add("Junk Food");
+    // Adding inner lists to the outer list
+    strings.add(innerList1);
+    strings.add(innerList2);
+    CreatorFromString creatorFromString = new CreatorFromString();
+    Searcher searcher = new Searcher(strings, creatorFromString, true);
+    searcher.search("Pizza", 0);
   }
 }

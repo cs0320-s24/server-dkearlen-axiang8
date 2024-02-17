@@ -1,4 +1,4 @@
-package edu.brown.cs.student.main;
+package edu.brown.cs.student.main.ServerAndHandlers;
 
 import static spark.Spark.after;
 
@@ -7,10 +7,6 @@ import edu.brown.cs.student.main.ACS.APIDataSource;
 import edu.brown.cs.student.main.ACS.CachingACSAPI;
 import edu.brown.cs.student.main.CSVDataSource.CSVSource;
 import edu.brown.cs.student.main.Creators.CreatorFromString;
-import edu.brown.cs.student.main.Handlers.BroadbandHandler;
-import edu.brown.cs.student.main.Handlers.LoadCSVHandler;
-import edu.brown.cs.student.main.Handlers.SearchCSVHandler;
-import edu.brown.cs.student.main.Handlers.ViewCSVHandler;
 import spark.Spark;
 
 /**

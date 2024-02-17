@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import com.squareup.moshi.Moshi;
 import edu.brown.cs.student.main.ACS.ACSAPIDataSource;
 import edu.brown.cs.student.main.ACS.CachingACSAPI;
-import edu.brown.cs.student.main.Handlers.BroadbandHandler;
+import edu.brown.cs.student.main.ServerAndHandlers.BroadbandHandler;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -25,22 +25,6 @@ public class TestBroadband {
 
   @BeforeAll
   public static void setup_before_everything() {
-    // Set the Spark port number. This can only be done once, and has to
-    // happen before any route maps are added. Hence using @BeforeClass.
-    // Setting port 0 will cause Spark to use an arbitrary available port.
-    Spark.port(0);
-    // Don't try to remember it. Spark won't actually give Spark.port() back
-    // until route mapping has started. Just get the port number later. We're using
-    // a random _free_ port to remove the chances that something is already using a
-    // specific port on the system used for testing.
-
-    // Remove the logging spam during tests
-    //   This is surprisingly difficult. (Notes to self omitted to avoid complicating things.)
-
-    // SLF4J doesn't let us change the logging level directly (which makes sense,
-    //   given that different logging frameworks have different level labels etc.)
-    // Changing the JDK *ROOT* logger's level (not global) will block messages
-    //   (assuming using JDK, not Log4J)
     Logger.getLogger("").setLevel(Level.WARNING); // empty name = root logger
   }
 
@@ -195,5 +179,19 @@ public class TestBroadband {
     // If the cache works properly, getting two responses 5 seconds away from one another should
     // yield the same time.
     assertEquals(response.responseMap().get("Time"), responseCached.responseMap().get("Time"));
+  }
+
+  /**
+   * testBroadbandHandler tests the method checkParams, which is normally behavior that can only be
+   * seen when testing it live through the server.
+   **/
+  @Test
+  public void testBroadbandHandler(){
+    CachingACSAPI cachingACSAPI = new CachingACSAPI(new ACSAPIDataSource(), 10, 1);
+    BroadbandHandler broadbandHandler = new BroadbandHandler(cachingACSAPI);
+
+    assertEquals(broadbandHandler.checkParams("", ""), -1);
+    assertEquals(broadbandHandler.checkParams("Texas", ""), -1);
+    assertEquals(broadbandHandler.checkParams("", "Boerne County"), -1);
   }
 }

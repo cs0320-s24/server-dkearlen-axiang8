@@ -1,12 +1,12 @@
-package edu.brown.cs.student.main.Handlers;
+package edu.brown.cs.student.main.ServerAndHandlers;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.CSVDataSource.CSVData;
 import edu.brown.cs.student.main.CSVDataSource.CSVSource;
+import edu.brown.cs.student.main.CSVDataSource.Searcher;
 import edu.brown.cs.student.main.Creators.CreatorFromString;
-import edu.brown.cs.student.main.Searcher;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;

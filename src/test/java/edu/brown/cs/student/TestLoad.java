@@ -7,9 +7,9 @@ import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.CSVDataSource.CSVSource;
 import edu.brown.cs.student.main.Creators.CreatorFromString;
-import edu.brown.cs.student.main.Handlers.LoadCSVHandler;
-import edu.brown.cs.student.main.Handlers.SearchCSVHandler;
-import edu.brown.cs.student.main.Handlers.ViewCSVHandler;
+import edu.brown.cs.student.main.ServerAndHandlers.LoadCSVHandler;
+import edu.brown.cs.student.main.ServerAndHandlers.SearchCSVHandler;
+import edu.brown.cs.student.main.ServerAndHandlers.ViewCSVHandler;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
@@ -39,7 +39,6 @@ public class TestLoad {
 
   @BeforeAll
   public static void setup_before_everything() {
-    Spark.port(0);
     Logger.getLogger("").setLevel(Level.WARNING); // empty name = root logger
   }
 

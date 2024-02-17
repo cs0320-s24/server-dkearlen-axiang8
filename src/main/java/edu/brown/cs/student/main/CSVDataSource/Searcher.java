@@ -1,4 +1,4 @@
-package edu.brown.cs.student.main;
+package edu.brown.cs.student.main.CSVDataSource;
 
 import edu.brown.cs.student.main.Creators.CreatorFromString;
 import java.util.ArrayList;
@@ -39,12 +39,12 @@ public class Searcher {
   public List<List<String>> search(String value, int columnIdentifier) {
     this.matchFound = false;
     List<List<String>> returnList = new ArrayList<>();
-    // if (hasHeaders) {
-    // System.out.println("removing headers");
-    // data.remove(0);
-    // }
-    if (columnIdentifier > creator.getHeaderRow().size() || columnIdentifier < 0) {
+    if (columnIdentifier > data.get(0).size() || columnIdentifier < 0) {
       throw new IllegalArgumentException();
+    }
+    if (hasHeaders) {
+      System.out.println("removing headers");
+      data.remove(0);
     }
     return findMatchWithIndex(value, returnList, columnIdentifier);
   }

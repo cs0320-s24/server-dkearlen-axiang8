@@ -5,6 +5,7 @@
 # Project Details
 Server, Team Members: Devon Kear-Leng (dkearlen) and Austin Xiang (axiang8). About 20 hours total.
 GitHub Repo Link: https://github.com/cs0320-s24/server-dkearlen-axiang8
+
 # Design Choices
 Server is a project that has 3 main components to it: load, search, and view endpoints, an API endpoint, and a cache/proxy class that works with a class that work directly with the endpoint.
 The load, search, and view endpoints are contained on their own, while the API endpoint works with the cache/proxy in order
@@ -16,8 +17,7 @@ utilizes the Parser class and is used by LoadCSV, and the getParsedData() method
 defensive programming purposes. 
 
 # Errors/Bugs
-
-There is a bug in our search. If hasHeaders is set to 'yes', the headers row will not be removed.
+N/A
 
 # Tests
 For broadband, we had three testing methods, one that tested normal input, specifically that it was non-case sensitive, another that tested malformed input,
@@ -34,6 +34,7 @@ unsuccessfully loaded data.
 The testing for SearchCSV is quite extensive. We tested for searching with an unsuccessful load, searching with and without headers, searching without a target,
 searching with an invalid string index, searching when the index type isn't specified, with an invalid integer index, with a string index declared as an integer,
 and with an invalid index type, such as boolean.
+
 # How to
 Test for broadband are located in TestBroadband, and the program can be started by clicking the green arrow in Server. Tests for LoadCSVHandler are in TestLoad, for
 SearchCSVHandler are in TestSearch, and for ViewCSVHandler in TestView.
