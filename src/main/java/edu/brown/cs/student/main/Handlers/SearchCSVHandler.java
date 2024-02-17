@@ -3,11 +3,10 @@ package edu.brown.cs.student.main.Handlers;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
-import edu.brown.cs.student.main.Creators.CreatorFromString;
 import edu.brown.cs.student.main.CSVDataSource.CSVData;
 import edu.brown.cs.student.main.CSVDataSource.CSVSource;
+import edu.brown.cs.student.main.Creators.CreatorFromString;
 import edu.brown.cs.student.main.Searcher;
-
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
@@ -39,7 +38,8 @@ public class SearchCSVHandler implements Route {
     try {
       data = source.getParsedData();
       String target = request.queryParams("target");
-      boolean hasHeaders = Boolean.parseBoolean(request.queryParams("headers")); //default false if not specified
+      boolean hasHeaders =
+          Boolean.parseBoolean(request.queryParams("headers")); // default false if not specified
       String indexType = request.queryParams("indexType");
       String index = request.queryParams("index");
       Searcher searcher = new Searcher(data, creator, hasHeaders);
@@ -52,17 +52,16 @@ public class SearchCSVHandler implements Route {
       List<List<String>> searchResults;
       if (indexType == null && index == null) {
         searchResults = searcher.search(target);
-      }
-      else if (indexType == null) {
+      } else if (indexType == null) {
         responseMap.put("type", "error");
-        responseMap.put("error_type", "Must declare index type, either 'string' or 'int', along with index: " + index);
+        responseMap.put(
+            "error_type",
+            "Must declare index type, either 'string' or 'int', along with index: " + index);
         return new SearchCSVHandler.CSVFailureResponse(responseMap).serialize();
-      }
-      else if (indexType.equalsIgnoreCase("string")) {
+      } else if (indexType.equalsIgnoreCase("string")) {
         if (creator.getHeaderRow().contains(index)) {
           searchResults = searcher.search(target, index);
-        }
-        else {
+        } else {
           responseMap.put("type", "error");
           StringBuilder columnsAvailable = new StringBuilder();
           for (String column : creator.getHeaderRow()) {
@@ -84,10 +83,11 @@ public class SearchCSVHandler implements Route {
           responseMap.put("headers", hasHeaders);
           responseMap.put("indexType", indexType);
           return new SearchCSVHandler.CSVFailureResponse(responseMap).serialize();
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
           responseMap.put("type", "error");
-          responseMap.put("error_type", "Index must be greater than 0, less than " + creator.getHeaderRow().size());
+          responseMap.put(
+              "error_type",
+              "Index must be greater than 0, less than " + creator.getHeaderRow().size());
           responseMap.put("index", index);
           responseMap.put("target", target);
           responseMap.put("headers", hasHeaders);
@@ -108,10 +108,8 @@ public class SearchCSVHandler implements Route {
       responseMap.put("headers", hasHeaders);
       responseMap.put("index", index);
       responseMap.put("indexType", indexType);
-      responseMap.put(
-              "search_results", csvDataAdapter.toJson(new CSVData(searchResults)));
-    }
-    catch (IOException e) {
+      responseMap.put("search_results", csvDataAdapter.toJson(new CSVData(searchResults)));
+    } catch (IOException e) {
       responseMap.put("type", "error");
       responseMap.put("error_type", "No CSV loaded.");
       return new SearchCSVHandler.CSVFailureResponse(responseMap).serialize();
@@ -130,7 +128,8 @@ public class SearchCSVHandler implements Route {
       try {
         // Initialize Moshi which takes in this class and returns it as JSON!
         Moshi moshi = new Moshi.Builder().build();
-        JsonAdapter<SearchCSVHandler.CSVSuccessResponse> adapter = moshi.adapter(SearchCSVHandler.CSVSuccessResponse.class);
+        JsonAdapter<SearchCSVHandler.CSVSuccessResponse> adapter =
+            moshi.adapter(SearchCSVHandler.CSVSuccessResponse.class);
         return adapter.toJson(this);
       } catch (Exception e) {
         // For debugging purposes, show in the console _why_ this fails
@@ -153,7 +152,8 @@ public class SearchCSVHandler implements Route {
       try {
         // Initialize Moshi which takes in this class and returns it as JSON!
         Moshi moshi = new Moshi.Builder().build();
-        JsonAdapter<SearchCSVHandler.CSVFailureResponse> adapter = moshi.adapter(SearchCSVHandler.CSVFailureResponse.class);
+        JsonAdapter<SearchCSVHandler.CSVFailureResponse> adapter =
+            moshi.adapter(SearchCSVHandler.CSVFailureResponse.class);
         return adapter.toJson(this);
       } catch (Exception e) {
         // For debugging purposes, show in the console _why_ this fails

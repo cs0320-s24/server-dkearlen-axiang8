@@ -19,13 +19,13 @@ import java.util.Map;
 
 /**
  * @author devonkearleng
- * @version 1.0 - ACSAPIDataSource is the direct point of contact with the ACS API. It processes
- * and fetches any data needed by the user, throwing errors in the process if any errors occur.
- * */
-public class ACSAPIDataSource implements APIDataSource{
+ * @version 1.0 - ACSAPIDataSource is the direct point of contact with the ACS API. It processes and
+ *     fetches any data needed by the user, throwing errors in the process if any errors occur.
+ */
+public class ACSAPIDataSource implements APIDataSource {
   private Map<String, String> stateMap;
 
-  public ACSAPIDataSource(){
+  public ACSAPIDataSource() {
     // Instantiate the state to state code HashMap
     this.stateMap = new HashMap<>();
   }
@@ -33,7 +33,7 @@ public class ACSAPIDataSource implements APIDataSource{
    * @param state - State given by the user
    * @param county - County given by the user
    * @return - Returns an InternetAccessData, a record that holds all of the relevant data.
-   * */
+   */
   @Override
   public InternetAccessData getData(String state, String county)
       throws IOException, URISyntaxException, InterruptedException, DataRetrievalException {
@@ -43,11 +43,11 @@ public class ACSAPIDataSource implements APIDataSource{
    * @param state - State given by the user
    * @param county - County given by the user
    * @return - Returns an InternetAccessData, a record that holds all of the relevant data.
-   * */
+   */
   private InternetAccessData produceData(String state, String county)
       throws IOException, URISyntaxException, InterruptedException, DataRetrievalException {
     // Call for the stateMap to be filled if empty.
-    if (this.stateMap.isEmpty()){
+    if (this.stateMap.isEmpty()) {
       this.getStateCodes();
     }
     // get the county code from the state code and the county given (lowercase to remove
@@ -61,8 +61,9 @@ public class ACSAPIDataSource implements APIDataSource{
   }
 
   /**
-   * getStateCodes() is a method that will fill the stateMap HashMap if it is not filled (basically on first search)
-   * */
+   * getStateCodes() is a method that will fill the stateMap HashMap if it is not filled (basically
+   * on first search)
+   */
   private void getStateCodes() throws URISyntaxException, IOException, InterruptedException {
     // Create an instance of a request. This is where we get the link to where we want our JSON
     // file data.
@@ -106,10 +107,11 @@ public class ACSAPIDataSource implements APIDataSource{
    * @param state - The state given by the user
    * @param county - The county given by the user
    * @return - Returns a county code for the given county.
-   * */
+   */
   private String getCountyCode(String stateCode, String county, String state)
       throws URISyntaxException, IOException, InterruptedException, DataRetrievalException {
-    // If the stateCode is null, a DataRetrievalException should be thrown, as the data cannot be found for given input.
+    // If the stateCode is null, a DataRetrievalException should be thrown, as the data cannot be
+    // found for given input.
     if (stateCode == null) {
       throw new DataRetrievalException();
     }
@@ -156,7 +158,7 @@ public class ACSAPIDataSource implements APIDataSource{
    * @param stateCode - stateCode for the API given by the stateMap HashMap for the given state.
    * @param countyCode - countyCode for the API given by getCountyCode.
    * @return - A string representing the percentage that has access to internet.
-   * */
+   */
   private String getPercentageData(String stateCode, String countyCode)
       throws URISyntaxException, IOException, InterruptedException, DataRetrievalException {
     // Checks if the stateCode or the countyCode is null. If so, throw a DataRetrievalException.
@@ -194,12 +196,12 @@ public class ACSAPIDataSource implements APIDataSource{
     if (percentage == null) {
       throw new DataRetrievalException();
     }
-    // If the percentage is a infeasible number, we should throw a URISyntaxException, since the API gave bad data
+    // If the percentage is a infeasible number, we should throw a URISyntaxException, since the API
+    // gave bad data
     // This message means nothing, as it is handled in BroadbandHandler.
-    if (Double.parseDouble(percentage) < 0 || Double.parseDouble(percentage) > 100){
+    if (Double.parseDouble(percentage) < 0 || Double.parseDouble(percentage) > 100) {
       throw new URISyntaxException("bad data", "bad data");
     }
     return percentage;
   }
-
 }

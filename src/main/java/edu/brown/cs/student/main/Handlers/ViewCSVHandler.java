@@ -5,7 +5,6 @@ import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.CSVDataSource.CSVData;
 import edu.brown.cs.student.main.CSVDataSource.CSVSource;
-
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -35,8 +34,7 @@ public class ViewCSVHandler implements Route {
       responseMap.put("type", "view_success");
       responseMap.put("data", csvDataAdapter.toJson(data));
       return new ViewCSVHandler.CSVSuccessResponse(responseMap).serialize();
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       responseMap.put("type", "error");
       responseMap.put("error_type", "No CSV loaded.");
       return new ViewCSVHandler.CSVFailureResponse(responseMap).serialize();
@@ -54,7 +52,8 @@ public class ViewCSVHandler implements Route {
       try {
         // Initialize Moshi which takes in this class and returns it as JSON!
         Moshi moshi = new Moshi.Builder().build();
-        JsonAdapter<ViewCSVHandler.CSVSuccessResponse> adapter = moshi.adapter(ViewCSVHandler.CSVSuccessResponse.class);
+        JsonAdapter<ViewCSVHandler.CSVSuccessResponse> adapter =
+            moshi.adapter(ViewCSVHandler.CSVSuccessResponse.class);
         return adapter.toJson(this);
       } catch (Exception e) {
         // For debugging purposes, show in the console _why_ this fails
@@ -77,7 +76,8 @@ public class ViewCSVHandler implements Route {
       try {
         // Initialize Moshi which takes in this class and returns it as JSON!
         Moshi moshi = new Moshi.Builder().build();
-        JsonAdapter<ViewCSVHandler.CSVFailureResponse> adapter = moshi.adapter(ViewCSVHandler.CSVFailureResponse.class);
+        JsonAdapter<ViewCSVHandler.CSVFailureResponse> adapter =
+            moshi.adapter(ViewCSVHandler.CSVFailureResponse.class);
         return adapter.toJson(this);
       } catch (Exception e) {
         // For debugging purposes, show in the console _why_ this fails

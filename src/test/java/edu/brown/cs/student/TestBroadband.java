@@ -12,10 +12,9 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.Map;
-import okio.Buffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import okio.Buffer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,9 +67,19 @@ public class TestBroadband {
    * @return the connection for the given URL, just after connecting
    * @throws IOException if the connection fails for some reason
    */
-  private static HttpURLConnection tryRequest(String apiCall, String state, String county) throws IOException {
+  private static HttpURLConnection tryRequest(String apiCall, String state, String county)
+      throws IOException {
     // Configure the connection (but don't actually send the request yet)
-    URL requestURL = new URL("http://localhost:" + Spark.port() + "/" + apiCall + "?state=" + state + "&county=" + county);
+    URL requestURL =
+        new URL(
+            "http://localhost:"
+                + Spark.port()
+                + "/"
+                + apiCall
+                + "?state="
+                + state
+                + "&county="
+                + county);
     HttpURLConnection clientConnection = (HttpURLConnection) requestURL.openConnection();
     // The default method is "GET", which is what we're using here.
     // If we were using "POST", we'd need to say so.
@@ -79,9 +88,7 @@ public class TestBroadband {
     clientConnection.connect();
     return clientConnection;
   }
-  /**
-   * testBroadbandCleanData tests the API on clean input and that it gives back data properly.
-   * */
+  /** testBroadbandCleanData tests the API on clean input and that it gives back data properly. */
   @Test
   public void testBroadbandCleanData() throws IOException {
     HttpURLConnection clientConnection = tryRequest("broadband", "texas", "comal%20county");
@@ -89,13 +96,17 @@ public class TestBroadband {
     assertEquals(200, clientConnection.getResponseCode());
     // Build a new Moshi to run tests on.
     Moshi moshi = new Moshi.Builder().build();
-    BroadbandHandler.APISuccessResponse response = moshi.adapter(BroadbandHandler.APISuccessResponse.class).fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+    BroadbandHandler.APISuccessResponse response =
+        moshi
+            .adapter(BroadbandHandler.APISuccessResponse.class)
+            .fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
     // These tests ensure that the response map works with the API as intended.
     assertEquals(response.response_type(), "success");
     assertEquals(response.responseMap().get("State"), "texas");
     assertEquals(response.responseMap().get("County"), "comal county");
     assertEquals(response.responseMap().get("Percentage with Access to Internet"), "92.6");
-    // These tests ensure that the response map gives date as intended (time is too sensitive to test)
+    // These tests ensure that the response map gives date as intended (time is too sensitive to
+    // test)
     LocalDate date = LocalDate.now();
     assertEquals(response.responseMap().get("Date"), date.toString());
     clientConnection.disconnect();
@@ -105,13 +116,16 @@ public class TestBroadband {
     assertEquals(200, clientConnection2.getResponseCode());
     // Build a new Moshi to run tests on.
     Moshi moshi2 = new Moshi.Builder().build();
-    BroadbandHandler.APISuccessResponse response2 = moshi2.adapter(BroadbandHandler.APISuccessResponse.class).fromJson(new Buffer().readFrom(clientConnection2.getInputStream()));
-    assertEquals(response.responseMap().get("Percentage with Access to Internet"), response2.responseMap().get("Percentage with Access to Internet"));
+    BroadbandHandler.APISuccessResponse response2 =
+        moshi2
+            .adapter(BroadbandHandler.APISuccessResponse.class)
+            .fromJson(new Buffer().readFrom(clientConnection2.getInputStream()));
+    assertEquals(
+        response.responseMap().get("Percentage with Access to Internet"),
+        response2.responseMap().get("Percentage with Access to Internet"));
     assertEquals(response.response_type(), response2.response_type());
   }
-  /**
-   * testBroadbandMalformedInput() tests that errors are given in Json form correctly.
-   * */
+  /** testBroadbandMalformedInput() tests that errors are given in Json form correctly. */
   @Test
   public void testBroadbandMalformedInput() throws IOException {
     // This first set tests the output when the user input is something nonsensicle.
@@ -119,7 +133,10 @@ public class TestBroadband {
     assertEquals(200, clientConnection.getResponseCode());
     // Build a new Moshi to run tests on.
     Moshi moshi = new Moshi.Builder().build();
-    BroadbandHandler.APIFailureResponse response = moshi.adapter(BroadbandHandler.APIFailureResponse.class).fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+    BroadbandHandler.APIFailureResponse response =
+        moshi
+            .adapter(BroadbandHandler.APIFailureResponse.class)
+            .fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
     // If an error has been thrown and given, the normal categories of output should not be present
     assertEquals(response.response_type(), "error");
     assertNull(response.responseMap().get("State"));
@@ -130,17 +147,25 @@ public class TestBroadband {
     // Instead new categories corresponding to an error should be present instead.
     assertNotNull(response.responseMap().get("error_message"));
     assertNotNull(response.responseMap().get("error_type"));
-    assertEquals(response.responseMap().get("error_message"), "DataRetrievalException: Given state and county returned no results!");
+    assertEquals(
+        response.responseMap().get("error_message"),
+        "DataRetrievalException: Given state and county returned no results!");
     assertEquals(response.responseMap().get("error_type"), "error_datasource");
     clientConnection.disconnect();
     // This second set tests the output when the API data given back is something nonsensicle.
-    HttpURLConnection clientConnection2 = tryRequest("broadband", "California", "San%20Benito%20County");
+    HttpURLConnection clientConnection2 =
+        tryRequest("broadband", "California", "San%20Benito%20County");
     assertEquals(200, clientConnection2.getResponseCode());
     // Build a new Moshi to run tests on.
     Moshi moshi2 = new Moshi.Builder().build();
-    BroadbandHandler.APIFailureResponse response2 = moshi2.adapter(BroadbandHandler.APIFailureResponse.class).fromJson(new Buffer().readFrom(clientConnection2.getInputStream()));
+    BroadbandHandler.APIFailureResponse response2 =
+        moshi2
+            .adapter(BroadbandHandler.APIFailureResponse.class)
+            .fromJson(new Buffer().readFrom(clientConnection2.getInputStream()));
     assertEquals(response2.response_type(), "error");
-    assertEquals(response2.responseMap().get("error_message"), "URISyntaxException: State or County codes given were incorrect/API gave an error!");
+    assertEquals(
+        response2.responseMap().get("error_message"),
+        "URISyntaxException: State or County codes given were incorrect/API gave an error!");
     assertEquals(response2.responseMap().get("error_type"), "error_bad_json");
     clientConnection2.disconnect();
   }
@@ -151,16 +176,24 @@ public class TestBroadband {
     assertEquals(200, clientConnection.getResponseCode());
     // Build a new Moshi to run tests on.
     Moshi moshi = new Moshi.Builder().build();
-    BroadbandHandler.APISuccessResponse response = moshi.adapter(BroadbandHandler.APISuccessResponse.class).fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+    BroadbandHandler.APISuccessResponse response =
+        moshi
+            .adapter(BroadbandHandler.APISuccessResponse.class)
+            .fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
     clientConnection.disconnect();
-    // Sleep for 5 seconds, a margin of time long enough to create a difference in time if a cache was not present.
+    // Sleep for 5 seconds, a margin of time long enough to create a difference in time if a cache
+    // was not present.
     Thread.sleep(5000);
     HttpURLConnection clientConnectionAgain = tryRequest("broadband", "Texas", "comal%20county");
     assertEquals(200, clientConnectionAgain.getResponseCode());
     // Build another new Moshi
     Moshi moshiAgain = new Moshi.Builder().build();
-    BroadbandHandler.APISuccessResponse responseCached = moshiAgain.adapter(BroadbandHandler.APISuccessResponse.class).fromJson(new Buffer().readFrom(clientConnectionAgain.getInputStream()));
-    // If the cache works properly, getting two responses 5 seconds away from one another should yield the same time.
+    BroadbandHandler.APISuccessResponse responseCached =
+        moshiAgain
+            .adapter(BroadbandHandler.APISuccessResponse.class)
+            .fromJson(new Buffer().readFrom(clientConnectionAgain.getInputStream()));
+    // If the cache works properly, getting two responses 5 seconds away from one another should
+    // yield the same time.
     assertEquals(response.responseMap().get("Time"), responseCached.responseMap().get("Time"));
   }
 }

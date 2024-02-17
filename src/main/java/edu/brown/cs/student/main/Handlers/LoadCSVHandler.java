@@ -3,9 +3,9 @@ package edu.brown.cs.student.main.Handlers;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
-import edu.brown.cs.student.main.Creators.CreatorFromString;
 import edu.brown.cs.student.main.CSVDataSource.CSVData;
 import edu.brown.cs.student.main.CSVDataSource.CSVSource;
+import edu.brown.cs.student.main.Creators.CreatorFromString;
 import edu.brown.cs.student.main.Exceptions.MalformedCSVException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -93,6 +93,7 @@ public class LoadCSVHandler implements Route {
       return new LoadCSVHandler.CSVFailureResponse(responseMap).serialize();
     }
   }
+
   public record CSVSuccessResponse(String response_type, Map<String, Object> responseMap) {
     public CSVSuccessResponse(Map<String, Object> responseMap) {
       this("success", responseMap);
@@ -104,7 +105,8 @@ public class LoadCSVHandler implements Route {
       try {
         // Initialize Moshi which takes in this class and returns it as JSON!
         Moshi moshi = new Moshi.Builder().build();
-        JsonAdapter<LoadCSVHandler.CSVSuccessResponse> adapter = moshi.adapter(LoadCSVHandler.CSVSuccessResponse.class);
+        JsonAdapter<LoadCSVHandler.CSVSuccessResponse> adapter =
+            moshi.adapter(LoadCSVHandler.CSVSuccessResponse.class);
         return adapter.toJson(this);
       } catch (Exception e) {
         // For debugging purposes, show in the console _why_ this fails
@@ -127,7 +129,8 @@ public class LoadCSVHandler implements Route {
       try {
         // Initialize Moshi which takes in this class and returns it as JSON!
         Moshi moshi = new Moshi.Builder().build();
-        JsonAdapter<LoadCSVHandler.CSVFailureResponse> adapter = moshi.adapter(LoadCSVHandler.CSVFailureResponse.class);
+        JsonAdapter<LoadCSVHandler.CSVFailureResponse> adapter =
+            moshi.adapter(LoadCSVHandler.CSVFailureResponse.class);
         return adapter.toJson(this);
       } catch (Exception e) {
         // For debugging purposes, show in the console _why_ this fails
